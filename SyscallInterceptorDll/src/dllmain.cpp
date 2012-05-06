@@ -34,7 +34,6 @@ void init_intercept() { // TODO name differently and add note that we have to ex
 typedef VOID (WINAPI *ExitProcessFPtr)(UINT uExitCode);
 ExitProcessFPtr originalExitProcess = NULL;
 
-// "You've been hooked!"
 VOID WINAPI ExitProcessHook(UINT uExitCode)
 {
 	ensure_init();
