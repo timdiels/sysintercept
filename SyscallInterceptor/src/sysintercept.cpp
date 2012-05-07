@@ -43,8 +43,10 @@ HANDLE start_pipe_thread(DWORD);
 // - allow variable count of file rewrite args
 // - use rewrite args in functions
 // ------ file path rewrite functionality is done now
+// - add -v verbosity level for omitting some logging, default should mean nothing is logged
 // - use ZI to get our dependencies in here rather than just putting a copy in working tree (might first want to ask ZI mailing list on how other C++ devs do that).
 // - once we add a -h --help and -V --version message on CLI, optionally include short notice of license (find a pretty print library for standard help message printing)
+// - what about win64 support, testing it works everywhere in any program? ... stability?
 
 int _tmain(int argc, _TCHAR const* argv[]) {
 	try {

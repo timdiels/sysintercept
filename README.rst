@@ -25,6 +25,7 @@ How to compile
 - Install eclipse (or guess the commands).
 - Load projects.
 - Install windows SDK (for VC++ toolchain)
+- Install boost: http://www.boostpro.com/download/  or  http://www.boost.org/doc/libs/1_49_0/more/getting_started/windows.html
 - Clean and build SyscallInterceptor
 
 Note: does not compile with MinGW, you really need the VC++ toolchain

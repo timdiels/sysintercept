@@ -26,6 +26,7 @@
 								<option id="org.eclipse.cdt.msvc.cl.option.includes.377323442" name="Include Path (/I)" superClass="org.eclipse.cdt.msvc.cl.option.includes" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SyscallInterceptorCommon/headers}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:\Program Files\boost\boost_1_47&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/ninjectlib}&quot;"/>
 								</option>
 								<option id="org.eclipse.cdt.msvc.cl.option.optimization.765967550" name="Optimization" superClass="org.eclipse.cdt.msvc.cl.option.optimization"/>
