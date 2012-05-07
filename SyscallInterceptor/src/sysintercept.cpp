@@ -44,8 +44,8 @@ HANDLE start_pipe_thread(DWORD);
 int _tmain(int argc, _TCHAR* argv[]) {
 	// TODO if ever adding a help/version message on CLI, include short notice of license
 	try {
-		const char* exe = "C:\\Windows\\system32\\notepad.exe";
 		const _TCHAR* dll = argv[1];
+		const _TCHAR* exe = argv[2];
 
 		STARTUPINFO sInfo = {0};
 		sInfo.cb = sizeof(STARTUPINFO);

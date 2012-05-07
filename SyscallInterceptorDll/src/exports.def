@@ -1,3 +1,0 @@
-LIBRARY sysintercept.dll
-EXPORTS
-	init_intercept @1 NONAME

@@ -21,6 +21,7 @@
 
 #include "stdafx.h"
 #include <sstream>
+#include <iostream>
 
 struct Config {
 	char message[5];

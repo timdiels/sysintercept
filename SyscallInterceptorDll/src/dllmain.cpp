@@ -24,31 +24,133 @@
 
 using namespace std;
 
+// ntdll vs kernel32, see: http://en.wikipedia.org/wiki/Microsoft_Windows_library_files
+//
+// ntdll functions (only native apps and often kernel32 go directly to ntdll):
+// http://www.geoffchappell.com/studies/windows/win32/ntdll/api/index.htm
+// kernel32 functions: (or use dllexp to have a look yourself)
+// http://www.geoffchappell.com/studies/windows/win32/kernel32/api/index.htm
+
+bool first_arg = true;
+
+// function start
+inline void log_fs(wstring function_name) {
+	wcout << L"Dll: " << function_name << L"(";
+	first_arg = true;
+}
+
+// function arg
+template <typename T>
+inline void log_arg(T t) {
+	if (!first_arg) {
+		wcout << L", ";
+	}
+	wcout << t;
+	first_arg = false;
+}
+
+// function end
+inline void log_fe() {
+	wcout << L")" << endl;
+}
+
+void hook_everything();
 void ensure_init();
+VOID (WINAPI *realExitProcess)(UINT uExitCode) = NULL;
+HFILE (WINAPI *realOpenFile)(LPCSTR lpFileName, LPOFSTRUCT lpReOpenBuff, UINT uStyle) = NULL;
 
-Config conf;
+Config conf; // what kind of intercepting to do
+// TODO get_configuration with inline static conf and call to ensure_init? To prevent accidentally forgetting?
+NCodeHookIA32 nCodeHook;  // its destructor unhooks everything, so we'll keep it alive as a global
 
-void init_intercept() { // TODO name differently and add note that we have to export at least 1 thing to allow succesful dll load
+BOOL APIENTRY DllMain( HMODULE hModule,
+                       DWORD  ul_reason_for_call,
+                       LPVOID lpReserved
+					 )
+{
+	// Note: There are serious limits on what you can do in a DLL entry point:
+	//
+	// - You may only call kernel32.dll functions that do not load a library.
+	//   It isn't documented which functions are safe to call, but LoadLibrary and LoadLibraryEx
+	//   are clearly unsafe.
+	//
+	// - Because DLL notifications are serialized, do not attempt to communicate with other
+	//   threads or processes. Deadlocks may occur as a result.
+	//
+	// See http://msdn.microsoft.com/en-us/library/windows/desktop/ms682583(v=vs.85).aspx
+
+	switch (ul_reason_for_call)
+	{
+	case DLL_PROCESS_ATTACH:
+		// We aren't allowed to communicate with other processes/threads now (and named pipe funcs load a new library)
+		// So just place hooks and fetch hooking info later
+		hook_everything();
+		break;
+
+	case DLL_THREAD_ATTACH:
+	case DLL_THREAD_DETACH:
+	case DLL_PROCESS_DETACH:
+		break;
+	}
+	return TRUE;
 }
 
-typedef VOID (WINAPI *ExitProcessFPtr)(UINT uExitCode);
-ExitProcessFPtr originalExitProcess = NULL;
-
-VOID WINAPI ExitProcessHook(UINT uExitCode)
+VOID WINAPI newExitProcess(UINT uExitCode)
 {
-	ensure_init();
-
-	MessageBox(0, conf.message, "Good bye!", MB_ICONINFORMATION);
-
-	originalExitProcess(uExitCode);
+	//MessageBox(0, conf.message, "Good bye!", MB_ICONINFORMATION);
+	log_fs(L"ExitProcess");
+	log_fe();
+	realExitProcess(uExitCode);
 }
 
-// NOTE: this needs to be in global scope - otherwise the trampolines and hooks
-// are deleted when the destructor of nCodeHook is called!
-NCodeHookIA32 nCodeHook;
-void hookExitProcess()
+HFILE WINAPI newOpenFile(LPCSTR lpFileName, LPOFSTRUCT lpReOpenBuff, UINT uStyle) {
+	log_fs(L"OpenFile");
+	log_fe();
+	return realOpenFile(lpFileName, lpReOpenBuff, uStyle);
+}
+
+HANDLE (WINAPI* realCreateFileA)(LPCTSTR lpFileName, DWORD dwDesiredAccess, DWORD dwShareMode, LPSECURITY_ATTRIBUTES lpSecurityAttributes, DWORD dwCreationDisposition, DWORD dwFlagsAndAttributes, HANDLE hTemplateFile) = NULL;
+HANDLE WINAPI newCreateFileA(LPCTSTR lpFileName, DWORD dwDesiredAccess, DWORD dwShareMode, LPSECURITY_ATTRIBUTES lpSecurityAttributes, DWORD dwCreationDisposition, DWORD dwFlagsAndAttributes, HANDLE hTemplateFile) {
+	log_fs(L"CreateFileA");
+	log_fe();
+	return realCreateFileA(lpFileName, dwDesiredAccess, dwShareMode, lpSecurityAttributes, dwCreationDisposition, dwFlagsAndAttributes, hTemplateFile);
+}
+
+HANDLE (WINAPI* realCreateFileW)(LPCTSTR lpFileName, DWORD dwDesiredAccess, DWORD dwShareMode, LPSECURITY_ATTRIBUTES lpSecurityAttributes, DWORD dwCreationDisposition, DWORD dwFlagsAndAttributes, HANDLE hTemplateFile) = NULL;
+HANDLE WINAPI newCreateFileW(LPCTSTR lpFileName, DWORD dwDesiredAccess, DWORD dwShareMode, LPSECURITY_ATTRIBUTES lpSecurityAttributes, DWORD dwCreationDisposition, DWORD dwFlagsAndAttributes, HANDLE hTemplateFile) {
+	log_fs(L"CreateFileW");
+	log_arg((wchar_t*)lpFileName);
+	log_arg(dwDesiredAccess);
+	log_arg(dwShareMode);
+	log_arg(lpSecurityAttributes);
+	log_arg(dwCreationDisposition);
+	log_arg(dwFlagsAndAttributes);
+	log_arg(hTemplateFile);
+	log_fe();
+	return realCreateFileW((char*)L"b.txt", dwDesiredAccess, dwShareMode, lpSecurityAttributes, dwCreationDisposition, dwFlagsAndAttributes, hTemplateFile);
+}
+
+BOOL (WINAPI* realReadFile)(HANDLE hFile, LPVOID lpBuffer, DWORD nNumberOfBytesToRead, LPDWORD lpNumberOfBytesRead, LPOVERLAPPED lpOverlapped) = NULL;
+BOOL WINAPI newReadFile(HANDLE hFile, LPVOID lpBuffer, DWORD nNumberOfBytesToRead, LPDWORD lpNumberOfBytesRead, LPOVERLAPPED lpOverlapped) {
+	log_fs(L"ReadFile");
+	log_arg(hFile);
+	log_arg(lpBuffer);
+	log_arg(nNumberOfBytesToRead);
+	log_arg(lpNumberOfBytesRead);
+	log_arg(lpOverlapped);
+	log_fe();
+	return realReadFile(hFile, lpBuffer, nNumberOfBytesToRead, lpNumberOfBytesRead, lpOverlapped);
+}
+
+// TODO LZOpenFile?
+
+void hook_everything()  // hook everything we might need
 {
-	originalExitProcess = nCodeHook.createHookByName("kernel32.dll", "ExitProcess", ExitProcessHook);
+	realExitProcess = nCodeHook.createHookByName("kernel32.dll", "ExitProcess", newExitProcess);
+	realOpenFile = nCodeHook.createHookByName("kernel32.dll", "OpenFile", newOpenFile);
+	realCreateFileA = nCodeHook.createHookByName("kernel32.dll", "CreateFileA", newCreateFileA);
+	realCreateFileW = nCodeHook.createHookByName("kernel32.dll", "CreateFileW", newCreateFileW);
+	realReadFile = nCodeHook.createHookByName("kernel32.dll", "ReadFile", newReadFile);
 }
 
 // inits if we hadn't already (do not call during DllMain!)
@@ -72,35 +174,4 @@ void ensure_init() {
 	}
 }
 
-BOOL APIENTRY DllMain( HMODULE hModule,
-                       DWORD  ul_reason_for_call,
-                       LPVOID lpReserved
-					 )
-{
-	// Note: There are serious limits on what you can do in a DLL entry point:
-	//
-	// - You may only call kernel32.dll functions that do not load a library.
-	//   It isn't documented which functions are safe to call, but LoadLibrary and LoadLibraryEx
-	//   are clearly unsafe.
-	//
-	// - Because DLL notifications are serialized, do not attempt to communicate with other
-	//   threads or processes. Deadlocks may occur as a result.
-	//
-	// See http://msdn.microsoft.com/en-us/library/windows/desktop/ms682583(v=vs.85).aspx
-
-	switch (ul_reason_for_call)
-	{
-	case DLL_PROCESS_ATTACH:
-		// We aren't allowed to communicate with other processes/threads now (and named pipe funcs load a new library)
-		// So just place hooks and fetch hooking info later
-		hookExitProcess();
-		break;
-
-	case DLL_THREAD_ATTACH:
-	case DLL_THREAD_DETACH:
-	case DLL_PROCESS_DETACH:
-		break;
-	}
-	return TRUE;
-}
-
+__declspec(dllexport) void dummyexport() {}  // a valid dll needs to export at least one thing
