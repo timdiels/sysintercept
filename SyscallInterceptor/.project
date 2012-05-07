@@ -3,7 +3,6 @@
 	<name>SyscallInterceptor</name>
 	<comment></comment>
 	<projects>
-		<project>SyscallInterceptorDll</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

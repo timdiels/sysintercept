@@ -21,8 +21,11 @@
 #include <iostream>
 #include <IATModifier.h>
 #include <common.h>
+#include <rapidxml/rapidxml_print.hpp>
+#include <rapidxml/rapidxml.hpp>
 
 using namespace std;
+using namespace rapidxml;
 
 struct PipeThreadArgs {
 	string pipe_name;
@@ -34,18 +37,27 @@ HANDLE start_pipe_thread(DWORD);
 
 // Note: win32 closes all handles when the process exits; so you don't have to bother closing handles at process exit.
 
-/*
- * Create child process in suspended state
- * Change its IAT so it'll load our dll
- * Inject a suspended thread that delivers config data to the dll
- * Start the main thread, this will init the process, call DllMain on dlls and eventually call main(),
- * Our DllMain will start and wait for the injected thread
- */
-int _tmain(int argc, _TCHAR* argv[]) {
-	// TODO if ever adding a help/version message on CLI, include short notice of license
+// TODO list:
+// - use proper logging library and log to file rather than cout (boost has one)
+// - add logging for all file related functions we might need for file path rewriting
+// - allow variable count of file rewrite args
+// - use rewrite args in functions
+// ------ file path rewrite functionality is done now
+// - use ZI to get our dependencies in here rather than just putting a copy in working tree (might first want to ask ZI mailing list on how other C++ devs do that).
+// - once we add a -h --help and -V --version message on CLI, optionally include short notice of license (find a pretty print library for standard help message printing)
+
+int _tmain(int argc, _TCHAR const* argv[]) {
 	try {
 		const _TCHAR* dll = argv[1];
 		const _TCHAR* exe = argv[2];
+
+		// rapidxml notes:
+		// - xml_document points to argv[3] string, it doesn't copy it. The string must live as long as doc lives.
+		// - even though it takes char*, it supports UTF
+		xml_document<> doc;
+		doc.parse<0>((char*)argv[3]);
+		cout << doc << endl;
+		return 0;
 
 		STARTUPINFO sInfo = {0};
 		sInfo.cb = sizeof(STARTUPINFO);
@@ -53,7 +65,7 @@ int _tmain(int argc, _TCHAR* argv[]) {
 
 		cout << "Creating process" << endl;
 		throw_if(CreateProcess(exe,  // path to binary to run // TODO once you use lpcommandline, make this NULL
-				NULL,  // TODO exe followed by args to exe, beware of correct whitespace and quoting
+				NULL,  // exe followed by args to exe  TODO pass argv[4] and so on, beware of correct whitespace and quoting
 				NULL,  // security attributes, don't need those
 				NULL,  // more security attributes, don't need those
 				FALSE, // false = don't inherit handles. Not sure if this'd be needed for stdin, ...

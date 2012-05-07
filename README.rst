@@ -112,6 +112,8 @@ TODO
 
 Some might be concerned about performance, so should explain that this isn't emulation, it's just a dll injected into the target process that only adds a few ifs for every system call that *needs* to be intercepted for it to do its job. We won't hook things we don't need, ...
 
+No profiling or tuning was done. (TODO once conceptually stable)
+
 In a much much later project state, sysintercept could detect support for system call interposition and choose the best available mechanism. (e.g. prefer kernel module to userland patching) 
 
 
@@ -120,11 +122,12 @@ License
 
 Project is covered by the GPLv3 license.
 
-Notes on licenses of dependencies: TODO move to dev doc
+Libraries used in project:
 
 - distorm: Modified BSD license -> GPL compatible
 - ncodehook, ninjectlib: no license?
 - boost: boost license -> GPL compatible
+- RapidXML: MIT, boost license
 
 
 Contributor documentation
