@@ -1,1 +1,3 @@
-This is contents of B
+CreateFileA(\\.\pipe\sysintercept316, 2147483648, 2, 00000000, 3, 0, 00000000)
+CreateFileW(\\.\pipe\sysintercept316, 2147483648, 2, 00000000, 3, 0, 00000000)
+ReadFile(00000074, 1001A958, 5, 0022DD24, 00000000)

@@ -30,8 +30,9 @@
 							</tool>
 							<tool id="org.eclipse.cdt.msvc.cl.dll.debug.1989567623" name="C++ Compiler (cl)" superClass="org.eclipse.cdt.msvc.cl.dll.debug">
 								<option id="org.eclipse.cdt.msvc.cl.option.includes.377099534" name="Include Path (/I)" superClass="org.eclipse.cdt.msvc.cl.option.includes" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;C:\boost&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/distorm}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SyscallInterceptorCommon/headers}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SyscallInterceptorCommon/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/ncodehook}&quot;"/>
 								</option>
 								<option id="org.eclipse.cdt.msvc.cl.option.optimization.1833526744" name="Optimization" superClass="org.eclipse.cdt.msvc.cl.option.optimization"/>
@@ -43,10 +44,12 @@
 							</tool>
 							<tool id="org.eclipse.cdt.msvc.link.dll.debug.1266017340" name="Linker (link)" superClass="org.eclipse.cdt.msvc.link.dll.debug">
 								<option defaultValue="true" id="org.eclipse.cdt.msvc.link.option.dll.1906831740" name="Build a DLL" superClass="org.eclipse.cdt.msvc.link.option.dll" valueType="boolean"/>
-								<option id="org.eclipse.cdt.msvc.link.option.libpath.1243225237" name="Additional Libpath (/libpath)" superClass="org.eclipse.cdt.msvc.link.option.libpath"/>
+								<option id="org.eclipse.cdt.msvc.link.option.libpath.1243225237" name="Additional Libpath (/libpath)" superClass="org.eclipse.cdt.msvc.link.option.libpath" valueType="stringList">
+									<listOptionValue builtIn="false" value="&quot;C:\boost\stage\lib&quot;"/>
+								</option>
 								<option id="org.eclipse.cdt.msvc.link.option.libraries.2034090106" name="Libraries" superClass="org.eclipse.cdt.msvc.link.option.libraries" valueType="libs">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/distorm/distorm.lib}&quot;"/>
-									<listOptionValue builtIn="false" value="user32.lib"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SyscallInterceptorCommon/Release/sysinterceptor_common.lib}&quot;"/>
 								</option>
 								<option id="org.eclipse.cdt.msvc.link.option.others.211540847" name="Other Options" superClass="org.eclipse.cdt.msvc.link.option.others" valueType="stringList">
 									<listOptionValue builtIn="false" value="/NODEFAULTLIB:LIBCMT"/>

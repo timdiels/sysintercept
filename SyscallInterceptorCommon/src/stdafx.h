@@ -28,10 +28,28 @@
 #define _WIN32_IE 0x0700        // Change this to the appropriate value to target other versions of IE.
 #endif
 
+// Other defines
+// Always build everything for unicode (though we can still intercept ANSI versions of win32 functions)
+#define UNICODE
+#define _UNICODE
+#define BOOST_LOG_USE_WCHAR_T
 
 #define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
-// Windows Header Files:
 #include <windows.h>
 
 #include <stdio.h>
 #include <tchar.h>
+
+// often needed headers that hardly ever change (i.e. dependencies)
+#include <boost/filesystem.hpp>  // including this before boost/log/ fixes linker errors (it's a work around)
+#include <boost/log/common.hpp>
+#include <boost/locale.hpp>  // for wchar_t <-> char conversions
+#include "rapidxml/rapidxml.hpp"
+
+#include <string>
+#include <sstream>
+#include <iostream>
+
+#include "logging.h"
+
+

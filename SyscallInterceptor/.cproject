@@ -25,8 +25,8 @@
 							<tool command="cl /c" commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG}${OUTPUT_PREFIX}${OUTPUT} ${INPUTS}" errorParsers="org.eclipse.cdt.core.VCErrorParser" id="org.eclipse.cdt.msvc.cl.dll.debug.2037402718" name="C++ Compiler (cl)" superClass="org.eclipse.cdt.msvc.cl.dll.debug">
 								<option id="org.eclipse.cdt.msvc.cl.option.includes.377323442" name="Include Path (/I)" superClass="org.eclipse.cdt.msvc.cl.option.includes" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SyscallInterceptorCommon/headers}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;C:\Program Files\boost\boost_1_47&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SyscallInterceptorCommon/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:\boost&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/ninjectlib}&quot;"/>
 								</option>
 								<option id="org.eclipse.cdt.msvc.cl.option.optimization.765967550" name="Optimization" superClass="org.eclipse.cdt.msvc.cl.option.optimization"/>
@@ -37,6 +37,12 @@
 								<inputType id="org.eclipse.cdt.msvc.rc.inputType.379906676" superClass="org.eclipse.cdt.msvc.rc.inputType"/>
 							</tool>
 							<tool command="link" commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG}${OUTPUT_PREFIX}${OUTPUT} ${INPUTS}" errorParsers="org.eclipse.cdt.core.VCErrorParser" id="org.eclipse.cdt.msvc.link.dll.debug.1016808161" name="Linker (link)" superClass="org.eclipse.cdt.msvc.link.dll.debug">
+								<option id="org.eclipse.cdt.msvc.link.option.libpath.1455508878" name="Additional Libpath (/libpath)" superClass="org.eclipse.cdt.msvc.link.option.libpath" valueType="stringList">
+									<listOptionValue builtIn="false" value="&quot;C:\boost\stage\lib&quot;"/>
+								</option>
+								<option id="org.eclipse.cdt.msvc.link.option.libraries.390023554" name="Libraries" superClass="org.eclipse.cdt.msvc.link.option.libraries" valueType="libs">
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/SyscallInterceptorCommon/Release/sysinterceptor_common.lib}&quot;"/>
+								</option>
 								<inputType id="org.eclipse.cdt.msvc.link.inputType.1692759223" superClass="org.eclipse.cdt.msvc.link.inputType"/>
 							</tool>
 							<tool id="org.eclipse.cdt.msvc.lib.1541036220" name="Library Manager (lib)" superClass="org.eclipse.cdt.msvc.lib"/>

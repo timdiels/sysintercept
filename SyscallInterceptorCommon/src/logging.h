@@ -19,32 +19,18 @@
 
 #pragma once
 
-#include "stdafx.h"
-#include <sstream>
-#include <iostream>
-
-struct Config {
-	char message[5];
+enum log_level {
+	trace = 10,
+	debug = 20,
+	info = 30,
+	warning = 40,
+	error = 50,
+	fatal = 60
 };
 
-template <class T>
-inline std::string to_str(const T& t)
-{
-	std::stringstream ss;
-	ss << t;
-	return ss.str();
-}
+#include <boost/log/sources/severity_feature.hpp>
+#include <boost/log/sources/severity_logger.hpp>
+extern boost::log::sources::wseverity_logger<> _lg;
+#define LOG(level) BOOST_LOG_SEV(_lg, level)
 
-inline void throw_if_(bool throw_, const std::string& what) {
-	if (throw_) throw std::runtime_error(what);
-}
-
-inline void throw_if(bool throw_, const std::string& what) {
-	throw_if_(throw_, "Failed to " + what + ", GetLastError=" + to_str(GetLastError()));
-}
-
-inline std::string get_pipe_name(DWORD process_id) {
-	return "\\\\.\\pipe\\sysintercept" + to_str(process_id);
-}
-
-
+void init_logging(std::string log_file_name /*, verbosity*/);

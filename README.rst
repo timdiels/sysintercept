@@ -23,12 +23,39 @@ How to compile
 --------------
 
 - Install eclipse (or guess the commands).
+
 - Load projects.
+
 - Install windows SDK (for VC++ toolchain)
-- Install boost: http://www.boostpro.com/download/  or  http://www.boost.org/doc/libs/1_49_0/more/getting_started/windows.html
+
+- boost and friends:
+
+  Regardless of where you install boost, I'll refer to it as C:\boost.
+  
+  - Install boost: 
+    
+    Dowload and unpack `this`__ to C:\boost.
+  
+    __ http://www.boost.org/doc/libs/1_49_0/more/getting_started/windows.html
+  
+  - Install boost-log:
+
+    Download and unpack boost-log files from sourceforge, to C:\boost.
+  
+  - Compile all boost libs, open "windows SDK 7.1 command prompt" (via start menu) and execute::
+  
+      cd C:\boost
+      bootstrap
+      PATH=%PATH%;C:\boost\bin
+      .\b2 --build-type=complete stage
+    
+  If you installed boost in a different location, add the header boost root dir to include path, and the stage/lib dir to linker library paths.
+
 - Clean and build SyscallInterceptor
 
-Note: does not compile with MinGW, you really need the VC++ toolchain
+
+
+Note: does not compile with MinGW (ncodehook, ninjectlib), you really need the VC++ toolchain
 
 
 Use cases

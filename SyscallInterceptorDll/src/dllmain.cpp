@@ -17,7 +17,7 @@
  * along with sysintercept.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "stdafx.h"
+#include <stdafx.h>
 #include <NCodeHookInstantiation.h>
 #include <tlhelp32.h>
 #include <common.h>
@@ -31,31 +31,8 @@ using namespace std;
 // kernel32 functions: (or use dllexp to have a look yourself)
 // http://www.geoffchappell.com/studies/windows/win32/kernel32/api/index.htm
 
-bool first_arg = true;
-
-// function start
-inline void log_fs(wstring function_name) {
-	wcout << L"Dll: " << function_name << L"(";
-	first_arg = true;
-}
-
-// function arg
-template <typename T>
-inline void log_arg(T t) {
-	if (!first_arg) {
-		wcout << L", ";
-	}
-	wcout << t;
-	first_arg = false;
-}
-
-// function end
-inline void log_fe() {
-	wcout << L")" << endl;
-}
-
 void hook_everything();
-void ensure_init();
+bool ensured_init();
 VOID (WINAPI *realExitProcess)(UINT uExitCode) = NULL;
 HFILE (WINAPI *realOpenFile)(LPCSTR lpFileName, LPOFSTRUCT lpReOpenBuff, UINT uStyle) = NULL;
 
@@ -95,57 +72,63 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 	return TRUE;
 }
 
-VOID WINAPI newExitProcess(UINT uExitCode)
-{
-	//MessageBox(0, conf.message, "Good bye!", MB_ICONINFORMATION);
-	log_fs(L"ExitProcess");
-	log_fe();
+VOID WINAPI newExitProcess(UINT uExitCode) {
+	if (ensured_init()) {
+		LOG(info) << L"ExitProcess(" << uExitCode << L")";
+	}
 	realExitProcess(uExitCode);
 }
 
 HFILE WINAPI newOpenFile(LPCSTR lpFileName, LPOFSTRUCT lpReOpenBuff, UINT uStyle) {
-	log_fs(L"OpenFile");
-	log_fe();
+	if (ensured_init()) {
+		LOG(info) << L"OpenFile(" << lpFileName
+				<< ", " << lpReOpenBuff
+				<< ", " << uStyle << L")";
+	}
 	return realOpenFile(lpFileName, lpReOpenBuff, uStyle);
 }
 
 HANDLE (WINAPI* realCreateFileA)(LPCTSTR lpFileName, DWORD dwDesiredAccess, DWORD dwShareMode, LPSECURITY_ATTRIBUTES lpSecurityAttributes, DWORD dwCreationDisposition, DWORD dwFlagsAndAttributes, HANDLE hTemplateFile) = NULL;
 HANDLE WINAPI newCreateFileA(LPCTSTR lpFileName, DWORD dwDesiredAccess, DWORD dwShareMode, LPSECURITY_ATTRIBUTES lpSecurityAttributes, DWORD dwCreationDisposition, DWORD dwFlagsAndAttributes, HANDLE hTemplateFile) {
-	log_fs(L"CreateFileA");
-	log_fe();
+	if (ensured_init()) {
+		LOG(info) << L"CreateFileA(" << lpFileName
+				<< ", " << dwDesiredAccess
+				<< ", " << dwShareMode
+				<< ", " << lpSecurityAttributes
+				<< ", " << dwCreationDisposition
+				<< ", " << dwFlagsAndAttributes
+				<< ", " << hTemplateFile << L")";
+	}
 	return realCreateFileA(lpFileName, dwDesiredAccess, dwShareMode, lpSecurityAttributes, dwCreationDisposition, dwFlagsAndAttributes, hTemplateFile);
 }
 
 HANDLE (WINAPI* realCreateFileW)(LPCTSTR lpFileName, DWORD dwDesiredAccess, DWORD dwShareMode, LPSECURITY_ATTRIBUTES lpSecurityAttributes, DWORD dwCreationDisposition, DWORD dwFlagsAndAttributes, HANDLE hTemplateFile) = NULL;
 HANDLE WINAPI newCreateFileW(LPCTSTR lpFileName, DWORD dwDesiredAccess, DWORD dwShareMode, LPSECURITY_ATTRIBUTES lpSecurityAttributes, DWORD dwCreationDisposition, DWORD dwFlagsAndAttributes, HANDLE hTemplateFile) {
-	log_fs(L"CreateFileW");
-	log_arg((wchar_t*)lpFileName);
-	log_arg(dwDesiredAccess);
-	log_arg(dwShareMode);
-	log_arg(lpSecurityAttributes);
-	log_arg(dwCreationDisposition);
-	log_arg(dwFlagsAndAttributes);
-	log_arg(hTemplateFile);
-	log_fe();
-	return realCreateFileW((char*)L"b.txt", dwDesiredAccess, dwShareMode, lpSecurityAttributes, dwCreationDisposition, dwFlagsAndAttributes, hTemplateFile);
+	if (ensured_init()) {
+		LOG(info) << L"CreateFileW(" << (wchar_t*)lpFileName
+				<< ", " << dwDesiredAccess
+				<< ", " << dwShareMode
+				<< ", " << lpSecurityAttributes
+				<< ", " << dwCreationDisposition
+				<< ", " << dwFlagsAndAttributes
+				<< ", " << hTemplateFile << L")";
+	}
+	return realCreateFileW(lpFileName, dwDesiredAccess, dwShareMode, lpSecurityAttributes, dwCreationDisposition, dwFlagsAndAttributes, hTemplateFile);
 }
 
 BOOL (WINAPI* realReadFile)(HANDLE hFile, LPVOID lpBuffer, DWORD nNumberOfBytesToRead, LPDWORD lpNumberOfBytesRead, LPOVERLAPPED lpOverlapped) = NULL;
 BOOL WINAPI newReadFile(HANDLE hFile, LPVOID lpBuffer, DWORD nNumberOfBytesToRead, LPDWORD lpNumberOfBytesRead, LPOVERLAPPED lpOverlapped) {
-	log_fs(L"ReadFile");
-	log_arg(hFile);
-	log_arg(lpBuffer);
-	log_arg(nNumberOfBytesToRead);
-	log_arg(lpNumberOfBytesRead);
-	log_arg(lpOverlapped);
-	log_fe();
+	if (ensured_init()) {
+		LOG(info) << L"ReadFile(" << hFile
+				<< ", " << lpBuffer
+				<< ", " << nNumberOfBytesToRead
+				<< ", " << lpNumberOfBytesRead
+				<< ", " << lpOverlapped << L")";
+	}
 	return realReadFile(hFile, lpBuffer, nNumberOfBytesToRead, lpNumberOfBytesRead, lpOverlapped);
 }
 
-// TODO LZOpenFile?
-
-void hook_everything()  // hook everything we might need
-{
+void hook_everything() { // hook everything we might need
 	realExitProcess = nCodeHook.createHookByName("kernel32.dll", "ExitProcess", newExitProcess);
 	realOpenFile = nCodeHook.createHookByName("kernel32.dll", "OpenFile", newOpenFile);
 	realCreateFileA = nCodeHook.createHookByName("kernel32.dll", "CreateFileA", newCreateFileA);
@@ -154,24 +137,34 @@ void hook_everything()  // hook everything we might need
 }
 
 // inits if we hadn't already (do not call during DllMain!)
-void ensure_init() {
+// returns whether is initialized
+bool ensured_init() { // TODO what about thread safety? Could we intercept a call to main() and base our init on that (would be so much easier)?
 	static bool initialized = false;
-	if (initialized) return;
-	initialized = true;  // try only once
+	static bool initializing = false;
+	if (initializing || initialized) return initialized;
+	initializing = true;
 
 	try {
-		string pipe_name = get_pipe_name(GetCurrentProcessId());
+		init_logging("sysintercept_dll.log");
+
+		wstring pipe_name = get_pipe_name(GetCurrentProcessId());
 
 		HANDLE pipe = CreateFile(pipe_name.c_str(), GENERIC_READ, FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, NULL);
-		throw_if(pipe == INVALID_HANDLE_VALUE, "open pipe");
+		throw_if(pipe == INVALID_HANDLE_VALUE, L"open pipe");
 		DWORD bytes_read;
-		throw_if(ReadFile(pipe, &conf, sizeof(Config), &bytes_read, NULL) == FALSE, "read config from pipe");
-		throw_if(bytes_read != sizeof(Config), "Config sent through pipe is too small, expected more bytes");
+		throw_if(ReadFile(pipe, &conf, sizeof(Config), &bytes_read, NULL) == FALSE, L"read config from pipe");
+		throw_if(bytes_read != sizeof(Config), L"Config sent through pipe is too small, expected more bytes");
 		CloseHandle(pipe);
-	} catch (exception& e) {
-		MessageBox(0, e.what(), "", MB_ICONINFORMATION);
+	} catch (exception& e) {// TODO fancier error handling here (use common global func)
+		cerr << e.what() << endl;
+		// note: leave initializing at true so that we won't attempt to init again
 		throw e;
+	} catch (...) {
+		cerr << "whoops" << endl;
 	}
+	initialized = true;
+	initializing = false;
+	return true;
 }
 
 __declspec(dllexport) void dummyexport() {}  // a valid dll needs to export at least one thing

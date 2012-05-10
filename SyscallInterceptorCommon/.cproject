@@ -8,8 +8,11 @@
 				<externalSettings>
 					<externalSetting>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/SyscallInterceptorShared"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/SyscallInterceptorCommon"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/SyscallInterceptorShared/Release"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/SyscallInterceptorCommon/Release"/>
 						<entry flags="RESOLVED" kind="libraryFile" name="SyscallInterceptorShared" srcPrefixMapping="" srcRootPath=""/>
+						<entry flags="RESOLVED" kind="libraryFile" name="sysinterceptor_common" srcPrefixMapping="" srcRootPath=""/>
 					</externalSetting>
 				</externalSettings>
 				<extensions>
@@ -18,7 +21,7 @@
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-				<configuration artifactExtension="lib" artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.staticLib" buildProperties="org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.release,org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.staticLib" description="" id="org.eclipse.cdt.msvc.lib.release.279832046" name="Release" parent="org.eclipse.cdt.msvc.lib.release">
+				<configuration artifactExtension="lib" artifactName="sysinterceptor_common" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.staticLib" buildProperties="org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.release,org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.staticLib" description="" id="org.eclipse.cdt.msvc.lib.release.279832046" name="Release" parent="org.eclipse.cdt.msvc.lib.release">
 					<folderInfo id="org.eclipse.cdt.msvc.lib.release.279832046." name="/" resourcePath="">
 						<toolChain id="org.eclipse.cdt.msvc.toolchain.lib.release.1648259267" name="Microsoft Visual C++" superClass="org.eclipse.cdt.msvc.toolchain.lib.release">
 							<targetPlatform id="org.eclipse.cdt.msvc.targetPlatform.lib.release.904983008" superClass="org.eclipse.cdt.msvc.targetPlatform.lib.release"/>
@@ -31,6 +34,9 @@
 							<tool id="org.eclipse.cdt.msvc.cl.lib.release.229974801" name="C++ Compiler (cl)" superClass="org.eclipse.cdt.msvc.cl.lib.release">
 								<option id="org.eclipse.cdt.msvc.cl.option.optimization.1454045993" name="Optimization" superClass="org.eclipse.cdt.msvc.cl.option.optimization"/>
 								<option id="org.eclipse.cdt.msvc.cl.option.debugFormat.1752461525" name="Debug Information Format" superClass="org.eclipse.cdt.msvc.cl.option.debugFormat"/>
+								<option id="org.eclipse.cdt.msvc.cl.option.includes.417608978" superClass="org.eclipse.cdt.msvc.cl.option.includes" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;C:\boost&quot;"/>
+								</option>
 								<inputType id="org.eclipse.cdt.msvc.cl.inputType.100287115" superClass="org.eclipse.cdt.msvc.cl.inputType"/>
 							</tool>
 							<tool id="org.eclipse.cdt.msvc.rc.lib.release.1040775988" name="Resource Compiler (rc)" superClass="org.eclipse.cdt.msvc.rc.lib.release">
