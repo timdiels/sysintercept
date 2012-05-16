@@ -44,7 +44,7 @@
 #include <boost/filesystem.hpp>  // including this before boost/log/ fixes linker errors (it's a work around)
 #include <boost/log/common.hpp>
 #include <boost/locale.hpp>  // for wchar_t <-> char conversions
-#include "rapidxml/rapidxml.hpp"
+#include <boost/regex.hpp>
 
 #include <string>
 #include <sstream>

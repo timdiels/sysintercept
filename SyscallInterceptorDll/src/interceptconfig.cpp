@@ -17,30 +17,10 @@
  * along with sysintercept.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#pragma once
+#include "stdafx.h"
+#include "interceptconfig.h"
 
-// TODO split this file
+using namespace std;
 
-template <class T>
-inline std::wstring to_str(const T& t)
-{
-	std::wstringstream ss;
-	ss << t;
-	return ss.str();
-}
-
-// exception stuff /////////
-#include <boost/exception/all.hpp>
-typedef boost::error_info<struct werror_message, std::wstring> werror;
-struct wruntime_error: virtual boost::exception, virtual std::exception { };
-
-inline void throw_if_(bool throw_, const std::wstring& what) {
-	if (throw_) throw wruntime_error() << werror(what);
-}
-
-inline void throw_if(bool throw_, const std::wstring& what) {
-	throw_if_(throw_, L"Failed to " + what + L", GetLastError=" + to_str(GetLastError()));
-}
-////////////////////////////
 
 

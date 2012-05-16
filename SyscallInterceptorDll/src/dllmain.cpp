@@ -19,8 +19,8 @@
 
 #include <stdafx.h>
 #include <NCodeHookInstantiation.h>
-#include <tlhelp32.h>
 #include <common.h>
+#include "ipc.h"
 
 using namespace std;
 
@@ -33,10 +33,8 @@ using namespace std;
 
 void hook_everything();
 bool ensured_init();
-VOID (WINAPI *realExitProcess)(UINT uExitCode) = NULL;
-HFILE (WINAPI *realOpenFile)(LPCSTR lpFileName, LPOFSTRUCT lpReOpenBuff, UINT uStyle) = NULL;
 
-Config conf; // what kind of intercepting to do
+//conf; // what kind of intercepting to do
 // TODO get_configuration with inline static conf and call to ensure_init? To prevent accidentally forgetting?
 NCodeHookIA32 nCodeHook;  // its destructor unhooks everything, so we'll keep it alive as a global
 
@@ -72,6 +70,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 	return TRUE;
 }
 
+VOID (WINAPI *realExitProcess)(UINT uExitCode) = NULL;
 VOID WINAPI newExitProcess(UINT uExitCode) {
 	if (ensured_init()) {
 		LOG(info) << L"ExitProcess(" << uExitCode << L")";
@@ -79,6 +78,7 @@ VOID WINAPI newExitProcess(UINT uExitCode) {
 	realExitProcess(uExitCode);
 }
 
+HFILE (WINAPI *realOpenFile)(LPCSTR lpFileName, LPOFSTRUCT lpReOpenBuff, UINT uStyle) = NULL;
 HFILE WINAPI newOpenFile(LPCSTR lpFileName, LPOFSTRUCT lpReOpenBuff, UINT uStyle) {
 	if (ensured_init()) {
 		LOG(info) << L"OpenFile(" << lpFileName
@@ -146,17 +146,9 @@ bool ensured_init() { // TODO what about thread safety? Could we intercept a cal
 
 	try {
 		init_logging("sysintercept_dll.log");
-
-		wstring pipe_name = get_pipe_name(GetCurrentProcessId());
-
-		HANDLE pipe = CreateFile(pipe_name.c_str(), GENERIC_READ, FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 0, NULL);
-		throw_if(pipe == INVALID_HANDLE_VALUE, L"open pipe");
-		DWORD bytes_read;
-		throw_if(ReadFile(pipe, &conf, sizeof(Config), &bytes_read, NULL) == FALSE, L"read config from pipe");
-		throw_if(bytes_read != sizeof(Config), L"Config sent through pipe is too small, expected more bytes");
-		CloseHandle(pipe);
+		get_xml_config(GetCurrentProcessId());
 	} catch (exception& e) {// TODO fancier error handling here (use common global func)
-		cerr << e.what() << endl;
+		cerr << "dll " << e.what() << endl;
 		// note: leave initializing at true so that we won't attempt to init again
 		throw e;
 	} catch (...) {

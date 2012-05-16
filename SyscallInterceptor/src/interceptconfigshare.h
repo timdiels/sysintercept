@@ -17,30 +17,17 @@
  * along with sysintercept.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#pragma once
+#ifndef INTERCEPTCONFIGSHARE_H_
+#define INTERCEPTCONFIGSHARE_H_
 
-// TODO split this file
+// Handles allocation/deallocation of InterceptConfig in shared memory
+class InterceptConfigShare {
+	public:
+		InterceptConfigShare(const wchar_t* xml_config, DWORD child_pid);
+		~InterceptConfigShare();
 
-template <class T>
-inline std::wstring to_str(const T& t)
-{
-	std::wstringstream ss;
-	ss << t;
-	return ss.str();
-}
+	private:
+		DWORD child_pid;
+};
 
-// exception stuff /////////
-#include <boost/exception/all.hpp>
-typedef boost::error_info<struct werror_message, std::wstring> werror;
-struct wruntime_error: virtual boost::exception, virtual std::exception { };
-
-inline void throw_if_(bool throw_, const std::wstring& what) {
-	if (throw_) throw wruntime_error() << werror(what);
-}
-
-inline void throw_if(bool throw_, const std::wstring& what) {
-	throw_if_(throw_, L"Failed to " + what + L", GetLastError=" + to_str(GetLastError()));
-}
-////////////////////////////
-
-
+#endif /* INTERCEPTCONFIG_H_ */

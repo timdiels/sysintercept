@@ -1,0 +1,91 @@
+<?xml version="1.0"?>
+
+<!-- TODO add required/optional/count, ... -->
+
+<xs:schema 
+ xmlns:tns="https://github.com/limyreth/sysintercept" 
+ xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+ elementFormDefault="qualified" 
+ targetNamespace="https://github.com/limyreth/sysintercept">
+ 
+	<xs:import namespace="http://www.w3.org/XML/1998/namespace"/>
+	
+	<xs:element name="sysintercept-config" type="tns:sysintercept-config"/>
+	
+	<xs:complexType name="sysintercept-config">
+		<xs:annotation><xs:documentation>
+			The root element
+		</xs:documentation></xs:annotation>
+		
+		<xs:sequence>
+			<xs:element name="filesystem" type="tns:filesystem"/>
+		</xs:sequence>
+	</xs:complexType>
+	
+	<xs:complexType name="filesystem">
+		<xs:annotation><xs:documentation>
+			Filesystem related intercept behaviour
+		</xs:documentation></xs:annotation>
+		
+		<xs:sequence>
+			<xs:element name="paths" type="tns:paths"/>
+		</xs:sequence>
+	</xs:complexType>
+	
+	<xs:complexType name="paths">
+		<xs:annotation><xs:documentation>
+			Filesystem path related intercept behaviour
+		</xs:documentation></xs:annotation>
+		
+		<xs:sequence>
+			<xs:element name="replace" type="tns:replace"/>
+		</xs:sequence>
+	</xs:complexType>
+	
+	<xs:complexType name="substitution">
+		<xs:annotation><xs:documentation>
+			Path replacement rule. Sysintercept will apply the regex substitution to any paths in file IO. All matching parts are replaced by replacement, other parts are simply copied.
+		</xs:documentation></xs:annotation>
+	
+		<xs:element name="match">
+			<xs:simpleContent>
+				<xs:annotation><xs:documentation>
+					What to match
+				</xs:documentation></xs:annotation>
+				
+		    	<xs:extension base="xs:string">
+					<xs:attribute name="format" type="xs:string">
+						<xs:annotation><xs:documentation>
+							match format used: 
+							- regex formats: perl, posix-extended or posix-basic,
+							- literal format: literal.  
+							TODO xs restriction.
+							Details: http://www.boost.org/doc/libs/1_49_0/libs/regex/doc/html/boost_regex/syntax.html
+						</xs:documentation></xs:annotation>
+					</xs:attribute>
+		    	</xs:extension>
+		    </xs:simpleContent>
+		</xs:element>
+		
+		<xs:element name="replacement">
+			<xs:simpleContent>
+				<xs:annotation><xs:documentation>
+					What to replace a match with
+				</xs:documentation></xs:annotation>
+				
+		    	<xs:extension base="xs:string">
+					<xs:attribute name="format" type="xs:string">
+						<xs:annotation><xs:documentation>
+							replacement string format: 
+							- regex based formats: sed, perl or boost-extended
+							- literal format: literal.
+							TODO xs restrictions
+							Details: http://www.boost.org/doc/libs/1_49_0/libs/regex/doc/html/boost_regex/format.html
+						</xs:documentation></xs:annotation>
+					</xs:attribute>
+		    	</xs:extension>
+		    </xs:simpleContent>
+		</xs:element>
+	</xs:complexType>
+	
+</xs:schema>

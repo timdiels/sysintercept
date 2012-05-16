@@ -17,30 +17,20 @@
  * along with sysintercept.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#pragma once
+#ifndef SUBSTITUTION_H_
+#define SUBSTITUTION_H_
 
-// TODO split this file
+// TODO: apparently boost.regex badly supports unicode. Because of wchar_t... eh?  http://www.boost.org/doc/libs/1_49_0/libs/regex/doc/html/boost_regex/unicode.html
+// TODO: there are more possible syntax types http://www.boost.org/doc/libs/1_49_0/libs/regex/doc/html/boost_regex/ref/basic_regex.html
 
-template <class T>
-inline std::wstring to_str(const T& t)
-{
-	std::wstringstream ss;
-	ss << t;
-	return ss.str();
-}
+class Substitution {
+	public:
+		Substitution(std::wstring match, std::wstring match_format, std::wstring replacement, std::wstring replacement_format);
 
-// exception stuff /////////
-#include <boost/exception/all.hpp>
-typedef boost::error_info<struct werror_message, std::wstring> werror;
-struct wruntime_error: virtual boost::exception, virtual std::exception { };
+	private:
+		boost::wregex match_expression;
+		std::wstring replacement;
+		boost::match_flag_type replacement_type;
+};
 
-inline void throw_if_(bool throw_, const std::wstring& what) {
-	if (throw_) throw wruntime_error() << werror(what);
-}
-
-inline void throw_if(bool throw_, const std::wstring& what) {
-	throw_if_(throw_, L"Failed to " + what + L", GetLastError=" + to_str(GetLastError()));
-}
-////////////////////////////
-
-
+#endif

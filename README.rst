@@ -8,7 +8,8 @@ Project state
 
 Toying, making good progress, but still unusable for users.
 
-Currently: Succesfully redirects a read to a.txt to b.txt (hardcoded)
+Currently: Injects dll, passes xml arg to it, then nothing happens (as expected)
+Previously: Succesfully redirects a read to a.txt to b.txt
 
 
 Usage
@@ -168,6 +169,15 @@ Currently this is info on various concepts related to design decisions and imple
 These sections can be fairly messy or outdated, you might want to mail limyreth@gmail.com instead.
 
 TODO change contact point to a mailing list
+
+Library notes
+-------------
+
+RapidXML
+''''''''
+
+- xml_document points to passed string, it doesn't copy it. The string must live as long as the doc lives.
+
 
 Current implementation plan
 ---------------------------

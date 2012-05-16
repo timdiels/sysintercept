@@ -17,30 +17,16 @@
  * along with sysintercept.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#pragma once
+#ifndef INTERCEPTCONFIG_H_
+#define INTERCEPTCONFIG_H_
 
-// TODO split this file
+// describes what to intercept and how to react (TODO probably want to rename to Interception and not treat as data but directly ask it what to do?)
+class InterceptConfig {
+	public:
+		InterceptConfig();
 
-template <class T>
-inline std::wstring to_str(const T& t)
-{
-	std::wstringstream ss;
-	ss << t;
-	return ss.str();
-}
+	private:
+		//substitutions;
+};
 
-// exception stuff /////////
-#include <boost/exception/all.hpp>
-typedef boost::error_info<struct werror_message, std::wstring> werror;
-struct wruntime_error: virtual boost::exception, virtual std::exception { };
-
-inline void throw_if_(bool throw_, const std::wstring& what) {
-	if (throw_) throw wruntime_error() << werror(what);
-}
-
-inline void throw_if(bool throw_, const std::wstring& what) {
-	throw_if_(throw_, L"Failed to " + what + L", GetLastError=" + to_str(GetLastError()));
-}
-////////////////////////////
-
-
+#endif /* INTERCEPTCONFIG_H_ */
