@@ -35,9 +35,22 @@ wchar_t* get_xml_config(DWORD process_id) {
 	cout << "yay" << endl;
 	wcout << ((wchar_t*)region.get_address()) << endl;
 
-	// TODO first validate doc with xsd (past that point you can assume input is correct)
+	// TODO For now, just always validate xml input by xsd
 
-	// TODO parse it with boost.serialize
+	// TODO CodeSynthesis  http://www.codesynthesis.com/products/xsd/
+	// doc: http://www.codesynthesis.com/projects/xsd/documentation/cxx/tree/guide/
+	//
+	// use its tree, before compile clean src/xml/, then xsd cxx-tree --char-type wchar_t --output-dir src/xml --namespace-map http://our/namespace=sysintercept::config --hxx-suffix h --cxx-suffix cpp sysintercept-config.xsd, add --generate-doxygen for free documentation based on the inline annotations in the xsd, to use doxygen: doxygen -g sysintercept.doxygen, to generate doxygen config, then further you can gen doxygen with: doxygen sysintercept.doxygen
+	// in using your creation thing: xml_schema::properties props; props.schema_location("http://our/namespace", "our.xsd"); Config* config_ = config("xml string", 0, props));
+	// error handling: catch (const xml_schema::exception& e) cout << e;
+	//
+	// Next: download source/binaries for xsd and compile
+
+	// We assume the XML is valid according to our xsd past this point
+
+	// Note: had a look at Boost.Serilization: easy to use but doesn't support attributes as part of input
+	// TODO parse
+
 	return NULL;
 }
 

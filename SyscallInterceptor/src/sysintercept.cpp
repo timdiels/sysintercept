@@ -28,12 +28,15 @@ using boost::locale::conv::from_utf;
 // Note: win32 closes all handles when the process exits; so you don't have to bother closing handles at process exit.
 
 // TODO list:
-// current: and parse xml config into InterceptConfig. boost.serialize for xml is next. allow variable count of file rewrite args to be passed by xml config
+// current: Added Makefile instead of letting eclipse try figuring it out
+// - use makefile instead of eclipse thingies (figuring out how to do it in eclipse is sometimes more work than simply adding a line in makefile. Also, makefiles are guaranteed to be easy to run elsewhere without needing to install eclipse or run a gui)
+// - parse xml config into InterceptConfig. boost.serialize for xml is next. allow variable count of file rewrite args to be passed by xml config
 // - use rewrite args in file functions
 // - add logging for all file related functions we might need for file path rewriting
 // - have config contain: verboseness of dll, of cli; path rewrites
 // - suggest to ZI list
 // ------ file path rewrite functionality is done now ------
+// - test it on windows 7, public pcs, upload and check it passes anti virus software
 // - TODO be sure that stdin, stdout and cli args are passed on correctly
 // ------ is now usable if you manage to compile it, but no doc or other nifty bits ------
 // - add -v verbosity level for omitting some logging, default should mean nothing is logged
