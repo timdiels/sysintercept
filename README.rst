@@ -49,8 +49,8 @@ How to compile
       bootstrap
       PATH=%PATH%;C:\boost\bin
       .\b2 --build-type=complete stage
-    
-  If you installed boost in a different location, add the header boost root dir to include path, and the stage/lib dir to linker library paths.
+      
+  - Download and install codesynthesis msi from here: http://www.codesynthesis.com/products/xsd/download.xhtml
 
 - Clean and build SyscallInterceptor
 
@@ -157,6 +157,7 @@ Libraries used in project:
 - ncodehook, ninjectlib: no license?
 - boost: boost license -> GPL compatible
 - RapidXML: MIT, boost license
+- CodeSynthesis: GPLv2
 
 
 Contributor documentation

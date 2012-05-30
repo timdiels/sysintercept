@@ -1,3 +1,6 @@
 eclipse.preferences.version=1
+environment/project/org.eclipse.cdt.msvc.toolchain.dll.debug.1883879057/PATH/delimiter=;
+environment/project/org.eclipse.cdt.msvc.toolchain.dll.debug.1883879057/PATH/operation=replace
+environment/project/org.eclipse.cdt.msvc.toolchain.dll.debug.1883879057/PATH/value=C\:\\Program Files\\Microsoft Visual Studio 10.0\\VC\\..\\Common7\\IDE;C\:\\Program Files\\Microsoft Visual Studio 10.0\\VC\\..\\Common7\\Tools;C\:\\Program Files\\Microsoft Visual Studio 10.0\\VC\\Bin;C\:\\Program Files\\Microsoft Visual Studio 10.0\\VC\\vcpackages;C\:\\Program Files\\Microsoft SDKs\\Windows\\v7.1\\Bin;C\:\\Program Files\\CodeSynthesis XSD 3.3\\bin\\;C\:\\Program Files\\CodeSynthesis XSD 3.3\\bin64\\;C\:\\Program Files\\Haskell\\bin;C\:\\Program Files\\Haskell Platform\\2011.4.0.0\\lib\\extralibs\\bin;C\:\\Program Files\\Haskell Platform\\2011.4.0.0\\bin;C\:\\WINDOWS\\system32;C\:\\WINDOWS;C\:\\WINDOWS\\System32\\Wbem;C\:\\Documents and Settings\\Administrator\\Application Data\\cabal\\bin;C\:\\partyplace\\eclipse
 environment/project/org.eclipse.cdt.msvc.toolchain.dll.debug.1883879057/append=true
 environment/project/org.eclipse.cdt.msvc.toolchain.dll.debug.1883879057/appendContributed=true
