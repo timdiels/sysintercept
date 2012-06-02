@@ -18,7 +18,7 @@
 					<folderInfo id="org.eclipse.cdt.msvc.toolchain.dll.debug.1883879057.965989003" name="/" resourcePath="">
 						<toolChain id="org.eclipse.cdt.msvc.toolchain.dll.debug.1895205057" name="org.eclipse.cdt.msvc.toolchain.dll.debug" superClass="org.eclipse.cdt.msvc.toolchain.dll.debug">
 							<targetPlatform id="org.eclipse.cdt.msvc.targetPlatform.dll.debug.23773481" superClass="org.eclipse.cdt.msvc.targetPlatform.dll.debug"/>
-							<builder arguments="" buildPath="${workspace_loc:/sysintercept}" command="nmake" id="cdt.managedbuild.builder.gnu.cross.745382836" keepEnvironmentInBuildfile="false" managedBuildOn="false" name="Gnu Make Builder" superClass="cdt.managedbuild.builder.gnu.cross"/>
+							<builder arguments="" buildPath="${workspace_loc:/sysintercept}" command="nmake" enableCleanBuild="false" enabledIncrementalBuild="false" id="cdt.managedbuild.builder.gnu.cross.745382836" keepEnvironmentInBuildfile="false" managedBuildOn="false" name="Gnu Make Builder" superClass="cdt.managedbuild.builder.gnu.cross"/>
 							<tool id="org.eclipse.cdt.msvc.cl.c.dll.debug.714408868" name="C Compiler (cl)" superClass="org.eclipse.cdt.msvc.cl.c.dll.debug">
 								<inputType id="org.eclipse.cdt.msvc.cl.inputType.c.1014029296" superClass="org.eclipse.cdt.msvc.cl.inputType.c"/>
 							</tool>
@@ -60,6 +60,27 @@
 	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
 	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets">
 		<buildTargets>
+			<target name="dll" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>nmake</buildCommand>
+				<buildTarget>dll</buildTarget>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>true</useDefaultCommand>
+				<runAllBuilders>true</runAllBuilders>
+			</target>
+			<target name="common" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>nmake</buildCommand>
+				<buildTarget>common</buildTarget>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>true</useDefaultCommand>
+				<runAllBuilders>true</runAllBuilders>
+			</target>
+			<target name="run_haskell_path_rewrite" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>nmake</buildCommand>
+				<buildTarget>run_haskell_path_rewrite</buildTarget>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>true</useDefaultCommand>
+				<runAllBuilders>true</runAllBuilders>
+			</target>
 			<target name="clean" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>nmake</buildCommand>
 				<buildArguments/>
@@ -68,26 +89,10 @@
 				<useDefaultCommand>true</useDefaultCommand>
 				<runAllBuilders>true</runAllBuilders>
 			</target>
-			<target name="dll" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+			<target name="cli" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
 				<buildCommand>nmake</buildCommand>
 				<buildArguments/>
-				<buildTarget>dll</buildTarget>
-				<stopOnError>true</stopOnError>
-				<useDefaultCommand>true</useDefaultCommand>
-				<runAllBuilders>true</runAllBuilders>
-			</target>
-			<target name="common" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-				<buildCommand>nmake</buildCommand>
-				<buildArguments/>
-				<buildTarget>common</buildTarget>
-				<stopOnError>true</stopOnError>
-				<useDefaultCommand>true</useDefaultCommand>
-				<runAllBuilders>true</runAllBuilders>
-			</target>
-			<target name="run_haskell_path_rewrite" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
-				<buildCommand>nmake</buildCommand>
-				<buildArguments/>
-				<buildTarget>run_haskell_path_rewrite</buildTarget>
+				<buildTarget>cli</buildTarget>
 				<stopOnError>true</stopOnError>
 				<useDefaultCommand>true</useDefaultCommand>
 				<runAllBuilders>true</runAllBuilders>

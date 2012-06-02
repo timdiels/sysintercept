@@ -46,14 +46,9 @@ xsd_lib = $(xsd_lib_dir)\*.lib
 
 boost = "C:\boost"
 
-# Maybe: use /Yc /Yu to speed up compilation
-#http://msdn.microsoft.com/en-us/library/d9b6wk21.aspx
-#$(stdafx_pch)
-#/Yu stdafx.h
-
-# Maybe: allow for better reincremental recompilation
-
 # add -Ox for maximal optimization (default = no optimization)
+# /Zi /Gm enable minimal rebuild
+# Note: precompiled header files (/Yc /Yu) speed up compilation by a ridiculous amount
 g_compile = cl /Zi /Gm /c /EHs /nologo \
 	/I"C:\Program Files\Microsoft SDKs\Windows\v7.1\Include" \
 	/I"C:\Program Files\Microsoft SDKs\Windows\v7.1\Include\gl" \
@@ -61,8 +56,10 @@ g_compile = cl /Zi /Gm /c /EHs /nologo \
 	/I$(boost) \
 	/I$(ninjectlib_src_dir) \
 	/I$(ncodehook_src_dir) \
-	/I$(distorm_src_dir) \
-	
+	/I$(distorm_src_dir)
+
+g_compile_pch = $(g_compile) /Yu"stdafx.h"
+
 g_libpaths = /libpath:"$(boost)\stage\lib" /libpath:$(xsd_lib_dir)
 g_mkexe = link /nologo $(g_libpaths)
 g_mklib = lib /nologo $(g_libpaths)
@@ -80,14 +77,19 @@ clean :
 	-rmdir /S /Q $(g_build_dir)
 	mkdir $(g_build_dir)
 
-$(cli) : $(common) $(ninjectlib) $(cli_cpps)
+$(cli) : $(common) $(ninjectlib) $(cli_cpps) $(cli_build_dir)\stdafx.pch
 	-mkdir $(cli_build_dir)
 	cd $(cli_build_dir) && \
-	$(g_compile) \
+	$(g_compile_pch) \
 		/I$(common_src_dir) \
 		/I$(cli_src_dir) \
 		$(cli_cpps) && \
 	$(g_mkexe) /out:$(cli) *.obj $(common) $(ninjectlib)
+	
+$(cli_build_dir)\stdafx.pch : $(cli_src_dir)\stdafx.h $(common_src_dir)\logging.h
+	-mkdir $(cli_build_dir)
+	cd $(cli_build_dir) && \
+	$(g_compile) /I$(common_src_dir) /I$(cli_src_dir) /Yc"stdafx.h" $(cli_src_dir)\stdafx.cpp
 	
 $(xml_src_dir) : $(config_xsd)
 	-mkdir $(xml_src_dir)
@@ -95,16 +97,17 @@ $(xml_src_dir) : $(config_xsd)
 		--hxx-suffix .h --cxx-suffix .cpp \
 		--char-type wchar_t \
 		--namespace-map "https://github.com/limyreth/sysintercept=sysintercept::config::xml" \
+		--cxx-prologue "#include ""stdafx.h""" \
 		$(config_xsd)
 
 # add --generate-doxygen for free documentation based on the inline annotations in the xsd
 # to use doxygen: doxygen -g sysintercept.doxygen, to generate doxygen config,
 # then further you can gen doxygen with: doxygen sysintercept.doxygen
 
-$(dll) : $(xml_src_dir) $(common) $(dll_cpps) $(ncodehook)
+$(dll) : $(xml_src_dir) $(common) $(dll_cpps) $(ncodehook) $(dll_build_dir)\stdafx.pch
 	-mkdir $(dll_build_dir)
 	cd $(dll_build_dir) && \
-	$(g_compile) \
+	$(g_compile_pch) \
 		/I$(common_src_dir) \
 		/I$(dll_src_dir) \
 		/I$(xml_src_dir) \
@@ -113,13 +116,23 @@ $(dll) : $(xml_src_dir) $(common) $(dll_cpps) $(ncodehook)
 		$(dll_cpps) && \
 	$(g_mkdll) /out:$(dll) *.obj $(common) $(ncodehook) $(xsd_lib)
 
-$(common) : $(common_cpps)
+$(dll_build_dir)\stdafx.pch : $(common_src_dir)\stdafx.h $(common_src_dir)\logging.h
+	-mkdir $(dll_build_dir)
+	cd $(dll_build_dir) && \
+	$(g_compile) /I$(common_src_dir) /I$(dll_src_dir) /Yc"stdafx.h" $(dll_src_dir)\stdafx.cpp
+
+$(common) : $(common_cpps) $(common_build_dir)\stdafx.pch
 	-mkdir $(common_build_dir)
 	cd $(common_build_dir) && \
-	$(g_compile) \
+	$(g_compile_pch) \
 		/I$(common_src_dir) \
 		$(common_cpps) && \
 	$(g_mklib) /out:"$(common)" *.obj
+	
+$(common_build_dir)\stdafx.pch : $(common_src_dir)\stdafx.h $(common_src_dir)\logging.h
+	-mkdir $(common_build_dir)
+	cd $(common_build_dir) && \
+	$(g_compile) /I$(common_src_dir) /Yc"stdafx.h" $(common_src_dir)\stdafx.cpp 
 	
 $(ncodehook) : $(ncodehook_cpps)
 	-mkdir $(ncodehook_build_dir)
