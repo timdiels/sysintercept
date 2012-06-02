@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+
+<sysintercept-config xmlns="https://github.com/limyreth/sysintercept">
+	<filesystem>
+		<path>
+			<replacement>
+				<from format="literal">a.txt</from>
+				<to format="literal">b.txt</to>
+			</replacement>
+		</path>
+	</filesystem>
+</sysintercept-config>

@@ -17,20 +17,27 @@
  * along with sysintercept.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SUBSTITUTION_H_
-#define SUBSTITUTION_H_
+#include "stdafx.h"
+#include <sysintercept_config.h>
+#include "config.h"
 
-// TODO: apparently boost.regex badly supports unicode. Because of wchar_t... eh?  http://www.boost.org/doc/libs/1_49_0/libs/regex/doc/html/boost_regex/unicode.html
-// TODO: there are more possible syntax types http://www.boost.org/doc/libs/1_49_0/libs/regex/doc/html/boost_regex/ref/basic_regex.html
+using namespace std;
+using namespace boost;
 
-class Substitution {
-	public:
-		Substitution(std::wstring match, std::wstring match_format, std::wstring replacement, std::wstring replacement_format);
+namespace xml = sysintercept::config::xml;
 
-	private:
-		boost::wregex match_expression;
-		std::wstring replacement;
-		boost::match_flag_type replacement_type;
-};
+Config::Config(xml::Config& xml_config) {
+	xml::Path::replacement_sequence rules = xml_config->filesystem().path().replacement();
+	path_replacement_rules.reserve(rules.size());
+	BOOST_FOREACH(xml::Replacement& r, rules) {
+		path_replacement_rules.push_back(Replacement(r));
+	}
+}
 
-#endif
+std::wstring transform_path(const std::wstring& path) {
+	wstring retval = path;
+	BOOST_FOREACH(Replacement& r, path_replacement_rules) {
+		retval = r.apply_to(retval);
+	}
+	return retval;
+}

@@ -28,7 +28,6 @@ using boost::locale::conv::from_utf;
 // Note: win32 closes all handles when the process exits; so you don't have to bother closing handles at process exit.
 
 // TODO list:
-// - parse xml config into InterceptConfig. allow variable count of file rewrite args to be passed by xml config
 // - use rewrite args in file functions
 // - add logging for all file related functions we might need for file path rewriting
 // - have config contain: verboseness of dll, of cli; path rewrites
@@ -43,22 +42,26 @@ using boost::locale::conv::from_utf;
 // - make compiling easier/better (maybe ZI with dependencies nicely separated from the rest) so we can make a first release v1
 // - suggest to haskell for prefix fix, on ZI list, ...
 // - what about win64 support, testing it works everywhere in any program? ... stability?
-// - could tweak boost.log by building it with BOOST_LOG_USE_WCHAT_T, ...
+// - could tweak boost.log by building it with BOOST_LOG_USE_WCHAR_T, ...
 
 int _tmain(int argc, wchar_t const* argv[]) {
 	try {
 		init_logging("sysintercept_cli.log");
 
-		const wchar_t* dll = argv[1]; // Note: can be any unicode
-		const wchar_t* exe = argv[2]; // Note: unicode string limited to latin1
-		const wchar_t* xml_config = argv[3]; // Note: can be any unicode XML config doc  TODO DTD or such
+		wstring exe_path(argv[0]); // path to our exe. TODO don't just assume argv0 contains abs path
+		wstring basename = exe_path.substr(0, exe_path.find_last_of('\\'));
+		const wstring dll = basename + L"\\sysintercept.dll"; // hardcoded for convenience, the dll may be anywhere
+		const wstring xsd_path = basename + L"\\sysintercept_config.xsd";
+		const wstring xml_config_path = argv[1];  // absolute path to xml config file
+		const wstring exe = argv[2]; // absolute path to exe to run. This unicode string is limited to latin1 charset (might be able to get rid of limitation later)
+		// TODO could be more lenient on the absolute paths by prefixing with working dir if relative... Well, that'd simply make it act like normal paths
 
 		STARTUPINFO sInfo = {0};
 		sInfo.cb = sizeof(STARTUPINFO);
 		PROCESS_INFORMATION pInfo;
 
 		LOG(trace) << L"Creating process";
-		throw_if(CreateProcess(exe,  // path to binary to run // TODO once you use lpcommandline, make this NULL
+		throw_if(CreateProcess(exe.c_str(),  // path to binary to run // TODO once you use lpcommandline, make this NULL
 				NULL,  // exe followed by args to exe  TODO pass argv[4] and so on, beware of correct whitespace and quoting
 				NULL,  // security attributes, don't need those
 				NULL,  // more security attributes, don't need those
@@ -70,8 +73,7 @@ int _tmain(int argc, wchar_t const* argv[]) {
 				&pInfo) // info about created process
 			== FALSE, L"create child process");
 
-		//bool cli_verboseness;
-		InterceptConfigShare share(xml_config, pInfo.dwProcessId /*, cli_verboseness*/); // Note: share will stay alive for as long as we stay in scope
+		InterceptConfigShare share(xml_config_path, xsd_path, pInfo.dwProcessId); // Note: share will stay alive for as long as we stay in scope
 
 		//
 		Process process(pInfo.dwProcessId);
@@ -104,7 +106,6 @@ int _tmain(int argc, wchar_t const* argv[]) {
 		LOG(fatal) << L"Main thread crashed";
 	}
 
-	// TODO cleanup child process on any exit, in case it's still there. Seems it stays alive if we crash before it's started or ended (does boost have a cleanup thing, smart pointers maybe?)
 	return 0;
 }
 

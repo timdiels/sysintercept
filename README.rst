@@ -6,10 +6,10 @@ sysintercept allows you to intercept and modify win32 system calls done by a pro
 Project state
 =============
 
-Toying, making good progress, but still unusable for users.
+Concept tested to work on a windows xp 32 bit (Succesfully redirected a read to a.txt to b.txt). 
+Currently adding CLI interface etc so it becomes usable...
 
-Currently: Injects dll, passes xml arg to it, then nothing happens (as expected)
-Previously: Succesfully redirects a read to a.txt to b.txt
+
 
 
 Usage

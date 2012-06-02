@@ -20,7 +20,8 @@
 #include <stdafx.h>
 #include <NCodeHookInstantiation.h>
 #include <common.h>
-#include "ipc.h"
+#include <sysintercept_config.h>
+#include "parse.h"
 
 using namespace std;
 
@@ -147,12 +148,16 @@ bool ensured_init() { // TODO what about thread safety? Could we intercept a cal
 	try {
 		init_logging("sysintercept_dll.log");
 		get_xml_config(GetCurrentProcessId());
+	} catch (xml_schema::exception& e) {
+		wcerr << "dll " << e << endl;
+		throw;
 	} catch (exception& e) {// TODO fancier error handling here (use common global func)
-		cerr << "dll " << e.what() << endl;
+		cerr << "dll: " << e.what() << endl;
 		// note: leave initializing at true so that we won't attempt to init again
-		throw e;
+		throw;
 	} catch (...) {
 		cerr << "whoops" << endl;
+		throw;
 	}
 	initialized = true;
 	initializing = false;

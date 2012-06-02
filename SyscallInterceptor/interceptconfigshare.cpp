@@ -25,16 +25,18 @@ using namespace std;
 using namespace boost::interprocess;
 
 // TODO: the dealloc could also be done with a remove_shared_memory_on_destroy(name) instance. If that ends up making things prettier...
-InterceptConfigShare::InterceptConfigShare(const wchar_t* xml_config, DWORD child_pid) {
+InterceptConfigShare::InterceptConfigShare(wstring xml_config_path, wstring xsd_path, DWORD child_pid) {
 	this->child_pid = child_pid;
 
-	const size_t string_length = wcslen(xml_config)+1;
+	const size_t xml_path_size = xml_config_path.length() + 1;  //+1 for nul-char
+	const size_t xsd_path_size = xsd_path.length() + 1;
 
 	shared_memory_object share(create_only, get_ipc_name(child_pid).c_str(), read_write);
-	share.truncate(sizeof(wchar_t) * string_length);
+	share.truncate(sizeof(wchar_t) * (xml_path_size + xsd_path_size));
 
 	mapped_region region(share, read_write);
-	wcsncpy((wchar_t*)region.get_address(), xml_config, string_length);
+	wcsncpy((wchar_t*)region.get_address(), xml_config_path.c_str(), xml_path_size);
+	wcsncpy((wchar_t*)region.get_address() + xml_path_size, xsd_path.c_str(), xsd_path_size);
 }
 
 InterceptConfigShare::~InterceptConfigShare() {

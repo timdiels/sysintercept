@@ -1,4 +1,5 @@
 /*
+ /*
  * Copyright 2012 Tim Diels
  *
  * This file is part of sysintercept.
@@ -17,17 +18,12 @@
  * along with sysintercept.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef INTERCEPTCONFIGSHARE_H_
-#define INTERCEPTCONFIGSHARE_H_
+#ifndef PARSE_H__
+#define PARSE_H__
 
-// Handles allocation/deallocation of InterceptConfig in shared memory
-class InterceptConfigShare {
-	public:
-		InterceptConfigShare(const wchar_t* xml_config, DWORD child_pid);
-		~InterceptConfigShare();
+class Config;
 
-	private:
-		DWORD child_pid;
-};
+// get config of process
+auto_ptr<Config> get_xml_config(DWORD process_id);
 
-#endif /* INTERCEPTCONFIG_H_ */
+#endif /* IPC_H_ */

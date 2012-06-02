@@ -18,34 +18,37 @@
  */
 
 #include "stdafx.h"
-#include "substitution.h"
-
-#include <boost/regex.hpp>
+#include <sysintercept_config.h>
+#include "replacement.h"
 
 using namespace std;
 using namespace boost;
 
-Substitution::Substitution(wstring match, wstring match_format, wstring replacement, wstring replacement_format) {
+namespace xml = sysintercept::config::xml;
+
+Replacement::Replacement(xml::Replacement& r) {
 	wregex::flag_type type;
-	if (match_format == L"perl") {
+	xml::ReplacementFromFormat from_format = r.from().format();
+	if (from_format == xml::ReplacementFromFormat::perl) {
 		type = regex_constants::perl;
-	} else if (match_format == L"posix-extended") {
+	} else if (from_format == xml::ReplacementFromFormat::posix_extended) {
 		type = regex_constants::extended;
-	} else if (match_format == L"posix-basic") {
+	} else if (from_format == xml::ReplacementFromFormat::posix_basic) {
 		type = regex_constants::basic;
-	} else if (match_format == L"literal") {
+	} else if (from_format == xml::ReplacementFromFormat::literal) {
 		type = regex_constants::literal;
 	} else {
 		assert(false);  // reaching this is total coding error
 	}
 
-	match_expression = wregex(match, type);
+	match_expression = wregex(r.from(), type);
 
-	if (replacement_format == L"sed") {
+	xml::ReplacementToFormat to_format = r.to().format();
+	if (to_format == xml::ReplacementToFormat::sed) {
 		replacement_type = regex_constants::format_sed;
-	} else if (replacement_format == L"perl") {
+	} else if (to_format == xml::ReplacementToFormat::perl) {
 		replacement_type = regex_constants::format_perl;
-	} else if (replacement_format == L"literal") {
+	} else if (to_format == xml::ReplacementToFormat::literal) {
 		replacement_type = regex_constants::format_literal;
 	} else {
 		assert(false);
@@ -53,3 +56,13 @@ Substitution::Substitution(wstring match, wstring match_format, wstring replacem
 
 	this->replacement = replacement;
 }
+
+wstring apply_to(const wstring& str) {
+	boost::wregex match_expression;
+	std::wstring replacement;
+	boost::match_flag_type replacement_type;
+	return ;
+}
+
+
+

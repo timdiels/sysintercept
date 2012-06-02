@@ -58,4 +58,40 @@
 		</scannerConfigBuildInfo>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
+	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets">
+		<buildTargets>
+			<target name="clean" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>nmake</buildCommand>
+				<buildArguments/>
+				<buildTarget>clean</buildTarget>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>true</useDefaultCommand>
+				<runAllBuilders>true</runAllBuilders>
+			</target>
+			<target name="dll" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>nmake</buildCommand>
+				<buildArguments/>
+				<buildTarget>dll</buildTarget>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>true</useDefaultCommand>
+				<runAllBuilders>true</runAllBuilders>
+			</target>
+			<target name="common" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>nmake</buildCommand>
+				<buildArguments/>
+				<buildTarget>common</buildTarget>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>true</useDefaultCommand>
+				<runAllBuilders>true</runAllBuilders>
+			</target>
+			<target name="run_haskell_path_rewrite" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>nmake</buildCommand>
+				<buildArguments/>
+				<buildTarget>run_haskell_path_rewrite</buildTarget>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>true</useDefaultCommand>
+				<runAllBuilders>true</runAllBuilders>
+			</target>
+		</buildTargets>
+	</storageModule>
 </cproject>

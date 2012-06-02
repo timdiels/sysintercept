@@ -45,6 +45,7 @@
 #include <boost/log/common.hpp>
 #include <boost/locale.hpp>  // for wchar_t <-> char conversions
 #include <boost/regex.hpp>
+#include <boost/foreach.hpp>
 
 #include <string>
 #include <sstream>
