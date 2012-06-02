@@ -27,14 +27,14 @@ using namespace boost;
 namespace xml = sysintercept::config::xml;
 
 Config::Config(xml::Config& xml_config) {
-	xml::Path::replacement_sequence rules = xml_config->filesystem().path().replacement();
+	xml::Path::replacement_sequence& rules = xml_config.filesystem().path().replacement();
 	path_replacement_rules.reserve(rules.size());
 	BOOST_FOREACH(xml::Replacement& r, rules) {
 		path_replacement_rules.push_back(Replacement(r));
 	}
 }
 
-std::wstring transform_path(const std::wstring& path) {
+std::wstring Config::transform_path(const std::wstring& path) {
 	wstring retval = path;
 	BOOST_FOREACH(Replacement& r, path_replacement_rules) {
 		retval = r.apply_to(retval);

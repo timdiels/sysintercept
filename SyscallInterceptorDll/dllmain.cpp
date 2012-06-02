@@ -21,7 +21,9 @@
 #include <NCodeHookInstantiation.h>
 #include <common.h>
 #include <sysintercept_config.h>
+#include <charset.h>
 #include "parse.h"
+#include "config.h"
 
 using namespace std;
 
@@ -35,8 +37,7 @@ using namespace std;
 void hook_everything();
 bool ensured_init();
 
-//conf; // what kind of intercepting to do
-// TODO get_configuration with inline static conf and call to ensure_init? To prevent accidentally forgetting?
+auto_ptr<Config> config;
 NCodeHookIA32 nCodeHook;  // its destructor unhooks everything, so we'll keep it alive as a global
 
 BOOL APIENTRY DllMain( HMODULE hModule,
@@ -58,7 +59,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 	switch (ul_reason_for_call)
 	{
 	case DLL_PROCESS_ATTACH:
-		// We aren't allowed to communicate with other processes/threads now (and named pipe funcs load a new library)
+		// We aren't allowed to communicate with other processes/threads now
 		// So just place hooks and fetch hooking info later
 		hook_everything();
 		break;
@@ -79,18 +80,24 @@ VOID WINAPI newExitProcess(UINT uExitCode) {
 	realExitProcess(uExitCode);
 }
 
+// OpenFile:
+// - deprecated
+// - does not support unicode
 HFILE (WINAPI *realOpenFile)(LPCSTR lpFileName, LPOFSTRUCT lpReOpenBuff, UINT uStyle) = NULL;
 HFILE WINAPI newOpenFile(LPCSTR lpFileName, LPOFSTRUCT lpReOpenBuff, UINT uStyle) {
+	wstring file_name(to_utf(lpFileName));
 	if (ensured_init()) {
 		LOG(info) << L"OpenFile(" << lpFileName
 				<< ", " << lpReOpenBuff
 				<< ", " << uStyle << L")";
+		file_name = config->transform_path(file_name);
 	}
-	return realOpenFile(lpFileName, lpReOpenBuff, uStyle);
+	return realOpenFile(from_utf(file_name).c_str(), lpReOpenBuff, uStyle);
 }
 
 HANDLE (WINAPI* realCreateFileA)(LPCTSTR lpFileName, DWORD dwDesiredAccess, DWORD dwShareMode, LPSECURITY_ATTRIBUTES lpSecurityAttributes, DWORD dwCreationDisposition, DWORD dwFlagsAndAttributes, HANDLE hTemplateFile) = NULL;
 HANDLE WINAPI newCreateFileA(LPCTSTR lpFileName, DWORD dwDesiredAccess, DWORD dwShareMode, LPSECURITY_ATTRIBUTES lpSecurityAttributes, DWORD dwCreationDisposition, DWORD dwFlagsAndAttributes, HANDLE hTemplateFile) {
+	wstring file_name(lpFileName);
 	if (ensured_init()) {
 		LOG(info) << L"CreateFileA(" << lpFileName
 				<< ", " << dwDesiredAccess
@@ -99,12 +106,14 @@ HANDLE WINAPI newCreateFileA(LPCTSTR lpFileName, DWORD dwDesiredAccess, DWORD dw
 				<< ", " << dwCreationDisposition
 				<< ", " << dwFlagsAndAttributes
 				<< ", " << hTemplateFile << L")";
+		file_name = config->transform_path(file_name);
 	}
-	return realCreateFileA(lpFileName, dwDesiredAccess, dwShareMode, lpSecurityAttributes, dwCreationDisposition, dwFlagsAndAttributes, hTemplateFile);
+	return realCreateFileA(file_name.c_str(), dwDesiredAccess, dwShareMode, lpSecurityAttributes, dwCreationDisposition, dwFlagsAndAttributes, hTemplateFile);
 }
 
 HANDLE (WINAPI* realCreateFileW)(LPCTSTR lpFileName, DWORD dwDesiredAccess, DWORD dwShareMode, LPSECURITY_ATTRIBUTES lpSecurityAttributes, DWORD dwCreationDisposition, DWORD dwFlagsAndAttributes, HANDLE hTemplateFile) = NULL;
 HANDLE WINAPI newCreateFileW(LPCTSTR lpFileName, DWORD dwDesiredAccess, DWORD dwShareMode, LPSECURITY_ATTRIBUTES lpSecurityAttributes, DWORD dwCreationDisposition, DWORD dwFlagsAndAttributes, HANDLE hTemplateFile) {
+	wstring file_name(lpFileName);
 	if (ensured_init()) {
 		LOG(info) << L"CreateFileW(" << (wchar_t*)lpFileName
 				<< ", " << dwDesiredAccess
@@ -113,8 +122,9 @@ HANDLE WINAPI newCreateFileW(LPCTSTR lpFileName, DWORD dwDesiredAccess, DWORD dw
 				<< ", " << dwCreationDisposition
 				<< ", " << dwFlagsAndAttributes
 				<< ", " << hTemplateFile << L")";
+		file_name = config->transform_path(file_name);
 	}
-	return realCreateFileW(lpFileName, dwDesiredAccess, dwShareMode, lpSecurityAttributes, dwCreationDisposition, dwFlagsAndAttributes, hTemplateFile);
+	return realCreateFileW(file_name.c_str(), dwDesiredAccess, dwShareMode, lpSecurityAttributes, dwCreationDisposition, dwFlagsAndAttributes, hTemplateFile);
 }
 
 BOOL (WINAPI* realReadFile)(HANDLE hFile, LPVOID lpBuffer, DWORD nNumberOfBytesToRead, LPDWORD lpNumberOfBytesRead, LPOVERLAPPED lpOverlapped) = NULL;
@@ -147,7 +157,7 @@ bool ensured_init() { // TODO what about thread safety? Could we intercept a cal
 
 	try {
 		init_logging("sysintercept_dll.log");
-		get_xml_config(GetCurrentProcessId());
+		config = load_config(GetCurrentProcessId());
 	} catch (xml_schema::exception& e) {
 		wcerr << "dll " << e << endl;
 		throw;

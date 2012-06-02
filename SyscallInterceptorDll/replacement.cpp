@@ -41,27 +41,29 @@ Replacement::Replacement(xml::Replacement& r) {
 		assert(false);  // reaching this is total coding error
 	}
 
+	LOG(debug) << r.from() << " " << type;
 	match_expression = wregex(r.from(), type);
 
 	xml::ReplacementToFormat to_format = r.to().format();
 	if (to_format == xml::ReplacementToFormat::sed) {
-		replacement_type = regex_constants::format_sed;
+		match_flags = regex_constants::format_sed;
 	} else if (to_format == xml::ReplacementToFormat::perl) {
-		replacement_type = regex_constants::format_perl;
+		match_flags = regex_constants::format_perl;
 	} else if (to_format == xml::ReplacementToFormat::literal) {
-		replacement_type = regex_constants::format_literal;
+		match_flags = regex_constants::format_literal;
 	} else {
 		assert(false);
 	}
 
-	this->replacement = replacement;
+	LOG(debug) << r.to() << " " << match_flags;
+
+	this->replacement = r.to();
 }
 
-wstring apply_to(const wstring& str) {
-	boost::wregex match_expression;
-	std::wstring replacement;
-	boost::match_flag_type replacement_type;
-	return ;
+wstring Replacement::apply_to(const wstring& str) {
+	wstring result = regex_replace(str, match_expression, replacement, match_flags);
+	LOG(debug) << str << " -> " << result;
+	return result;
 }
 
 

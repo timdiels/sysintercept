@@ -20,21 +20,19 @@
 #include <stdafx.h>
 #include <IATModifier.h>
 #include <common.h>
+#include <charset.h>
 #include "interceptconfigshare.h"
 
 using namespace std;
-using boost::locale::conv::from_utf;
 
 // Note: win32 closes all handles when the process exits; so you don't have to bother closing handles at process exit.
 
 // TODO list:
-// - use rewrite args in file functions
 // - add logging for all file related functions we might need for file path rewriting
 // - have config contain: verboseness of dll, of cli; path rewrites
-// - suggest to ZI list
 // ------ file path rewrite functionality is done now ------
 // - test it on windows 7, public pcs, upload and check it passes anti virus software
-// - TODO be sure that stdin, stdout and cli args are passed on correctly
+// - pass cli args
 // ------ is now usable if you manage to compile it, but no doc or other nifty bits ------
 // - add -v verbosity level for omitting some logging, default should mean nothing is logged
 // - use ZI to get our dependencies in here rather than just putting a copy in working tree (might first want to ask ZI mailing list on how other C++ devs do that).
@@ -82,8 +80,7 @@ int _tmain(int argc, wchar_t const* argv[]) {
 		LOG(trace) << L"Tinkering with IAT";
 		IATModifier iat_modifier(process);
 		iat_modifier.setImageBase(process.getImageBase(pInfo.hThread));
-		boost::locale::generator gen;
-		iat_modifier.writeIAT(from_utf(dll, gen("")));
+		iat_modifier.writeIAT(from_utf(dll));
 
 		// Start main
 		LOG(trace) << L"Starting child process";

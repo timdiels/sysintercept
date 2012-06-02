@@ -23,7 +23,6 @@
 
 class Config;
 
-// get config of process
-auto_ptr<Config> get_xml_config(DWORD process_id);
+std::auto_ptr<Config> load_config(DWORD process_id);
 
 #endif /* IPC_H_ */

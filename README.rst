@@ -6,22 +6,41 @@ sysintercept allows you to intercept and modify win32 system calls done by a pro
 Project state
 =============
 
-Concept tested to work on a windows xp 32 bit (Succesfully redirected a read to a.txt to b.txt). 
-Currently adding CLI interface etc so it becomes usable...
-
-
+See usage to get an idea. Also note we're currently at no-version, 
+i.e. not quite ready for production, or testing, ...
 
 
 Usage
 =====
 
-Too early in development for use: some hardcoding, not really a usable UI yet...
+At the command line::
 
-TODO Here's how to get the binary. Here's how to do a few common use cases.
+  sysintercept c:\full\path\to\config.xml relative\or\abs\path\to\something.exe
+  
+For config.xml syntax see 
+`this example <https://github.com/limyreth/sysintercept/blob/master/tests/haskell_pathrewrite/config.xml>`_ to get an idea
+and `sysintercept_config.xsd <https://github.com/limyreth/sysintercept/blob/master/xsd/sysintercept_config.xsd>`_
+for full details. 
+
+This runs something.exe and applies rules of config.xml to it. 
+
+What it also does:
+
+- does not pass on arguments to something.exe
+
+- prints logging messages like mad and you can't turn them off (mahahahaaa)
+
+- really likes absolute paths, hates relative paths
+
+- catches a few functions for path rewriting but haaaaardly all of them
+
+.. TODO Here's how to get the binary. Here's how to do a few common use cases.
 
 
 How to compile
 --------------
+
+.. TODO write a ZI thing that can compile it etc etc etc so you can 0launch thaturi, for you need to grab boost libs, and and and ... (those deps should be ZI too)
 
 - Install eclipse (or guess the commands).
 
@@ -156,7 +175,6 @@ Libraries used in project:
 - distorm: Modified BSD license -> GPL compatible
 - ncodehook, ninjectlib: no license?
 - boost: boost license -> GPL compatible
-- RapidXML: MIT, boost license
 - CodeSynthesis: GPLv2
 
 
@@ -170,14 +188,6 @@ Currently this is info on various concepts related to design decisions and imple
 These sections can be fairly messy or outdated, you might want to mail limyreth@gmail.com instead.
 
 TODO change contact point to a mailing list
-
-Library notes
--------------
-
-RapidXML
-''''''''
-
-- xml_document points to passed string, it doesn't copy it. The string must live as long as the doc lives.
 
 
 Current implementation plan

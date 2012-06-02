@@ -17,19 +17,9 @@
  * along with sysintercept.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CONFIG_H_
-#define CONFIG_H_
+#pragma once
 
-#include "replacement.h"
-
-class Config {
-	public:
-		Config(sysintercept::config::xml::Config&);
-
-		std::wstring transform_path(const std::wstring& path);
-
-	private:
-		std::vector<Replacement> path_replacement_rules;
-};
-
-#endif
+// these are really only for ascii - utf conversion
+// TODO rename once you figure out decent charset name
+std::string from_utf(std::wstring);
+std::wstring to_utf(std::string);

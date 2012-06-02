@@ -17,19 +17,22 @@
  * along with sysintercept.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CONFIG_H_
-#define CONFIG_H_
+#include "stdafx.h"
+#include "charset.h"
 
-#include "replacement.h"
+#include <boost/locale.hpp>
 
-class Config {
-	public:
-		Config(sysintercept::config::xml::Config&);
+using namespace std;
 
-		std::wstring transform_path(const std::wstring& path);
+std::string from_utf(std::wstring str) {
+	boost::locale::generator gen;
+	return boost::locale::conv::from_utf(str, gen("")); // TODO this should probably be Latin1... or whatever would be ascii
+}
 
-	private:
-		std::vector<Replacement> path_replacement_rules;
-};
+std::wstring to_utf(std::string str) {
+	boost::locale::generator gen;
+	return boost::locale::conv::to_utf<wchar_t>(str, gen(""));
+}
 
-#endif
+
+
