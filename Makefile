@@ -54,7 +54,7 @@ boost = "C:\boost"
 # Maybe: allow for better reincremental recompilation
 
 # add -Ox for maximal optimization (default = no optimization)
-g_compile = cl /c /EHs /nologo \
+g_compile = cl /Zi /Gm /c /EHs /nologo \
 	/I"C:\Program Files\Microsoft SDKs\Windows\v7.1\Include" \
 	/I"C:\Program Files\Microsoft SDKs\Windows\v7.1\Include\gl" \
 	/I"C:\Program Files\Microsoft Visual Studio 10.0\VC\Include" \

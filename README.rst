@@ -42,6 +42,8 @@ How to compile
 
 .. TODO write a ZI thing that can compile it etc etc etc so you can 0launch thaturi, for you need to grab boost libs, and and and ... (those deps should be ZI too)
 
+.. TODO we can get rid of the eclipse step by telling them to go in topdir, open a windows sdk command line, set envvar SRCDIR = ... and: nmake all
+
 - Install eclipse (or guess the commands).
 
 - Load projects.

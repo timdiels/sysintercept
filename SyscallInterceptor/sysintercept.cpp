@@ -28,8 +28,9 @@ using namespace std;
 // Note: win32 closes all handles when the process exits; so you don't have to bother closing handles at process exit.
 
 // TODO list:
+// - speed up compilation, incremental build etc, http://msdn.microsoft.com/en-us/library/kfz8ad09(v=vs.71).aspx, then stdafx
+// - allow changing verboseness of dll and cli. that of dll... well... we like to log while reading that xml, might want to keep verboseness separate from the xml! Was there no easier way to use boost ipc for multiple var passing?
 // - add logging for all file related functions we might need for file path rewriting
-// - have config contain: verboseness of dll, of cli; path rewrites
 // ------ file path rewrite functionality is done now ------
 // - test it on windows 7, public pcs, upload and check it passes anti virus software
 // - pass cli args
@@ -41,6 +42,7 @@ using namespace std;
 // - suggest to haskell for prefix fix, on ZI list, ...
 // - what about win64 support, testing it works everywhere in any program? ... stability?
 // - could tweak boost.log by building it with BOOST_LOG_USE_WCHAR_T, ...
+// - documentation: xml config file: xsd and doxygen and/or example file with comments that demonstrates/uses everything in the xsd
 
 int _tmain(int argc, wchar_t const* argv[]) {
 	try {
