@@ -37,16 +37,41 @@ What it also does:
 .. TODO Here's how to get the binary. Here's how to do a few common use cases.
 
 
-How to compile
---------------
+How to compile/'install'
+------------------------
 
-.. TODO write a ZI thing that can compile it etc etc etc so you can 0launch thaturi, for you need to grab boost libs, and and and ... (those deps should be ZI too)
+This section is fairly TODO atm (as 0compile doesn't work out of the box atm, apparently).
 
-.. TODO we can get rid of the eclipse step by telling them to go in topdir, open a windows sdk command line, set envvar SRCDIR = ... and: nmake all
 
-- Install eclipse (or guess the commands).
+For users:
 
-- Load projects.
+- Dowload and run `Zero Install setup for windows <http://0install.net/install-windows.html>`_
+
+- 0launch the_uri...
+
+
+For developers:
+
+- Setting up the environment:
+
+  - Dowload and run `Zero Install setup for windows <http://0install.net/install-windows.html>`_
+
+  - Open a command line and run::
+
+      0alias 0compile http://0install.net/2006/interfaces/0compile.xml
+
+  - Download and unpack the sysintercept source
+
+  - In the root of the source, open a command prompt and run::
+
+      0compile setup
+    
+- Actual building (incremental build)::
+
+    0compile build
+
+
+TODO get rid of these steps:
 
 - Install windows SDK (for VC++ toolchain)
 
@@ -72,12 +97,6 @@ How to compile
       .\b2 --build-type=complete stage
       
   - Download and install codesynthesis msi from here: http://www.codesynthesis.com/products/xsd/download.xhtml
-
-- Clean and build SyscallInterceptor
-
-
-
-Note: does not compile with MinGW (ncodehook, ninjectlib), you really need the VC++ toolchain
 
 
 Use cases
@@ -191,55 +210,26 @@ These sections can be fairly messy or outdated, you might want to mail limyreth@
 
 TODO change contact point to a mailing list
 
+TODO list
+---------
 
-Current implementation plan
----------------------------
+- Current: Side-tracked: make it easy to use ZI and 0compile on windows (it's apparently somewhat broken atm)
+- make a ZI feed with source implementation for it, so that you can 0alias uri/sysintercept, and then sysintercept arg arg arg, without having to do any building of your own (then present that feed to ZI). dev_interface.xml, followed by a public feed file.
+- allow changing verboseness of dll and cli. that of dll... well... we like to log while reading that xml, might want to keep verboseness separate from the xml! Was there no easier way to use boost ipc for multiple var passing?
+- add logging for all file related functions we might need for file path rewriting
+- ----- file path rewrite functionality is done now ------
+- pass cli args
+- test it on windows 7, public pcs, upload and check it passes anti virus software
+- what about win64 support, testing it works everywhere in any program? ... stability?
+- ----- is now usable if you manage to compile it, but no doc or other nifty bits ------
+- add -v verbosity level for omitting some logging, default should mean nothing is logged
+- once we add a -h --help and -V --version message on CLI, optionally include short notice of license (find a pretty print library for standard help message printing)
+- could tweak boost.log by building it with BOOST_LOG_USE_WCHAR_T, ...
+- documentation: xml config file: xsd and doxygen and/or example file with comments that demonstrates/uses everything in the xsd
+- suggest to haskell for prefix fix, ...   
 
-Sandbox app tested in VM backed by ncodehook (callee patching) for sys call
-interposition.  This way everything on the OS will pass the intercept library.
-The correct rules to apply will be determined by looking at the process id of
-the caller.
-
-To get n-codehooking into the correct process we start the process using
-n-injectlib.
-
-So:
-
-- we've a dll that places the hooks with n-codehook
-
-- we've a sandbox cli that starts the process injected with that dll with
-  n-injectlib
-
-So: sysintercept program args:
-
-- sysintercept creates child process of program in suspended state. It injects
-  sysintercept.dll into program with n-injectlib, which does so by IAT
-  patching.
-
-- sysintercept.dll intercepts syscalls by placing hooks with n-codehook, by
-  inline patching kernel32.dll and such, of that process, before main() is
-  called.
-
-Performance note: it's not that abnormal to have everything pass by the
-intercept library if you want to e.g. secure/monitor everything. (and maybe
-quantum computers could make it more of a non-issue ;))
-
-Written in C++ (because no python libs, it's a rather low-level system thing after all)
-
-Test 1
-''''''
-Start notepad, hook into its ExitProcess and display a MessageBox when it calls
-it.
-
-Done.
-
-Test 2
-''''''
-Like test 1, but now allow custom text for MessageBox without recompiling
-injected dll.
-
-Test x
-''''''
+A todo
+------
 
 Solve this:
 http://www.haskell.org/pipermail/cabal-devel/2011-November/007926.html
@@ -261,6 +251,32 @@ Next:
   site) TODO
   
   
+Design documentation
+====================
+
+Any documentation useful for making 'design' decisions of the program.
+
+Program design overview
+-----------------------
+
+sysintercept.dll: This dll intercepts win32 calls of whatever process it is loaded by.
+
+sysintercept.exe: a cli interface, that starts a program and injects the dll into that program's process.
+
+When sysintercept.exe runs:
+
+- it starts the child process in a suspended state,
+- makes the path to config.xml available in shared memory
+- modifies the IAT of the child process in memory, so it will load sysintercept.dll when started
+- resumes the child process and waits for it to finish
+
+When the child process runs (i.e. when it is resumed):
+
+- it will load the dll, 
+- during DllMain, the dll patches all relevant win32 calls (inline patching) so that they are intercepted
+- upon first win32 call, the dll will access shared memory, load and parse the xml file so that it knows what to do with intercepted calls.
+  Note we couldn't do this in DllMain as many libs aren't loaded yet (e.g. IPC for shared memory), Dll main is very limited.
+
 System call interposition methods
 ---------------------------------
 

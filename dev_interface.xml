@@ -1,0 +1,37 @@
+<!-- TODO use SRCDIR from env in the Makefile or it'll never work elsewhere, 
+unless they like using hip and trendy paths too! 
+SRCDIR is set by 0compile, all you have to do is tell the Makefile to use it instead of the hardcoded path
+-->
+
+xmlns:compile="http://zero-install.sourceforge.net/2006/namespaces/0compile"
+
+<group>
+  <command name='compile'>
+    <runner interface='http://timdiels.be/feeds/nmake.xml'>
+    </runner>
+  </command>
+
+  <group compile:binary-main='bin/debug/sysintercept.exe'>
+    <implementation arch="*-src" id="." version="0.1-pre">
+    </implementation>
+  </group>
+</group>
+
+
+What we want:
+
+- something that injects dependencies for building -> zeroinstall
+
+- but we also want incremental build -> 0compile: first setup, then just build, build, build
+
+OR
+
+<interface>
+	<command run>
+		<runner nmake>
+			<env SRCDIR . />
+			<requires somelib/>
+			<requires someheaders/>
+		</runner>
+	</command>
+</interface
