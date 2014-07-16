@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.6) 
 project(sysintercept)
 
-set(CMAKE_CXX_FLAGS /EHsc)
+#set(CMAKE_CXX_FLAGS /EHsc)
 
 #########################
 # Find libs on system

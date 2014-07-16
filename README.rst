@@ -40,42 +40,21 @@ What it also does:
 How to compile/'install'
 ------------------------
 
-This section is fairly TODO atm (as 0compile doesn't work out of the box atm, apparently).
+- Install `CMake`__
+  
+  __ http://cmake.org/cmake/resources/software.html
+  
+  Add to your PATH env variable: C:\Program Files (x86)\CMake\bin
+  
+- Install `mingw-w64`__
 
+  __ http://sourceforge.net/projects/mingw-w64/
+  
+  Select enough packages to install from the mingw installer (e.g. all of them; though you don't need languages other than c++)
+  
+  Add to your windows path: C:\MinGW\bin
 
-For users:
-
-- Dowload and run `Zero Install setup for windows <http://0install.net/install-windows.html>`_
-
-- 0launch the_uri...
-
-
-For developers:
-
-- Setting up the environment:
-
-  - Dowload and run `Zero Install setup for windows <http://0install.net/install-windows.html>`_
-
-  - Open a command line and run::
-
-      0alias 0compile http://0install.net/2006/interfaces/0compile.xml
-
-  - Download and unpack the sysintercept source
-
-  - In the root of the source, open a command prompt and run::
-
-      0compile setup
-    
-- Actual building (incremental build)::
-
-    0compile build
-
-
-TODO get rid of these steps:
-
-- Install Visual Studio Express for desktop (any version will do)
-
-- Install boost, ...:
+- Install boost:
 
   Regardless of where you install boost, I'll refer to it as C:\boost.
   
