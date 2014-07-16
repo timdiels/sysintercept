@@ -73,30 +73,33 @@ For developers:
 
 TODO get rid of these steps:
 
-- Install windows SDK (for VC++ toolchain)
+- Install Visual Studio Express for desktop (any version will do)
 
-- boost and friends:
+- Install boost, ...:
 
   Regardless of where you install boost, I'll refer to it as C:\boost.
   
   - Install boost: 
     
-    Dowload and unpack `this`__ to C:\boost.
+    Download and unpack `the latest source version of boost`__ to C:\boost.
   
-    __ http://www.boost.org/doc/libs/1_49_0/more/getting_started/windows.html
+    __ http://www.boost.org/
   
-  - Install boost-log:
-
-    Download and unpack boost-log files from sourceforge, to C:\boost.
-  
-  - Compile all boost libs, open "windows SDK 7.1 command prompt" (via start menu) and execute::
-  
+  - Locate 'Developer command prompt' of your visual studio. The name may differ depending on the version.
+    You are most likely to find it in: C:\ProgramData\Microsoft\Windows\Start Menu\Programs\
+    
+    Open the Visual Studio #### folder, follow the shortcut 'Visual Studio Tools', and there should be the dev command prompt.
+    
+  - Compile all boost libs, open a VS developer command prompt and execute:
+  	  
       cd C:\boost
       bootstrap
       PATH=%PATH%;C:\boost\bin
       .\b2 --build-type=complete stage
       
-  - Download and install codesynthesis msi from here: http://www.codesynthesis.com/products/xsd/download.xhtml
+- Download and install `codesynthesis msi`__
+
+  __ http://www.codesynthesis.com/products/xsd/download.xhtml
 
 
 Use cases
