@@ -1,6 +1,6 @@
 #include "IATModifier.h"
 #include <string>
-#include <Windows.h>
+#include <windows.h>
 #include <winnt.h>
 #include <corhdr.h>
 #include <boost/scoped_array.hpp>

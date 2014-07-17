@@ -18,6 +18,7 @@
  */
 
 #include <stdafx.h>
+#include <shellapi.h>
 #include <IATModifier.h>
 #include <common.h>
 #include <charset.h>
@@ -27,9 +28,11 @@ using namespace std;
 
 // Note: win32 closes all handles when the process exits; so you don't have to bother closing handles at process exit.
 
-int _tmain(int argc, wchar_t const* argv[]) {
+int main(int argc, char const* byte_argv[]) {
 	try {
 		init_logging("sysintercept_cli.log");
+
+		wchar_t** argv = CommandLineToArgvW(GetCommandLineW(), &argc);
 
 		wstring exe_path(argv[0]); // path to our exe. TODO don't just assume argv0 contains abs path
 		wstring basename = exe_path.substr(0, exe_path.find_last_of('\\'));

@@ -22,13 +22,15 @@
 
 #include <boost/shared_ptr.hpp>
 #include <boost/log/core.hpp>
-#include <boost/log/filters.hpp>
-#include <boost/log/formatters.hpp>
 #include <boost/log/attributes.hpp>
 #include <boost/log/sinks.hpp>
+#include <boost/log/expressions.hpp>
+#include <boost/utility/empty_deleter.hpp>
+#include <boost/locale.hpp>
+#include <locale>
+
 namespace logging = boost::log;
-namespace fmt = boost::log::formatters;
-namespace flt = boost::log::filters;
+namespace expr = boost::log::expressions;
 namespace sinks = boost::log::sinks;
 namespace attrs = boost::log::attributes;
 namespace src = boost::log::sources;
@@ -46,30 +48,34 @@ void init_logging(string log_file_name /*, verbosity*/) {
 	// TODO: if verbosity is set to 'none', set_logging_enabled to false, it gives better performance that way
 	// TODO: if verbosity more verbose than ... set auto_flush to true, false otherwise
 
-	boost::shared_ptr<logging::wcore> core = logging::wcore::get();
+	boost::shared_ptr<logging::core> core = logging::core::get();
+
+	locale loc = boost::locale::generator()("en_US.UTF-8");
 
 	// console sink
 	{
 		boost::shared_ptr<sinks::wtext_ostream_backend> backend = boost::make_shared<sinks::wtext_ostream_backend>();
-		backend->add_stream(boost::shared_ptr<std::wostream>(&std::wclog, logging::empty_deleter()));
+		backend->add_stream(boost::shared_ptr<std::wostream>(&std::wclog, boost::empty_deleter()));
 		backend->auto_flush(true);
 
 		typedef sinks::synchronous_sink<sinks::wtext_ostream_backend> sink_s;
 		boost::shared_ptr<sink_s> sink(new sink_s(backend));
+		sink->imbue(loc);
 		core->add_sink(sink);
 	}
 
 	// log file sink
 	{
-		boost::shared_ptr<sinks::wtext_file_backend> backend = boost::make_shared<sinks::wtext_file_backend>(
+		boost::shared_ptr<sinks::text_file_backend> backend = boost::make_shared<sinks::text_file_backend>(
 				keywords::file_name = log_file_name
 		);
 		backend->auto_flush(false);
 
-		typedef sinks::synchronous_sink<sinks::wtext_file_backend> sink_f;
+		typedef sinks::synchronous_sink<sinks::text_file_backend> sink_f;
 		boost::shared_ptr<sink_f> sink(new sink_f(backend));
+		sink->imbue(loc);
 		sink->set_filter(
-			flt::attr<int>(L"Severity") >= error
+			expr::is_in_range<int>("Severity", error, fatal)
 		);
 		core->add_sink(sink);
 	}

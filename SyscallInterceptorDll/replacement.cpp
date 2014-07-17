@@ -27,7 +27,7 @@ using namespace boost;
 namespace xml = sysintercept::config::xml;
 
 Replacement::Replacement(xml::Replacement& r) {
-	wregex::flag_type type;
+	unsigned int type;
 	xml::ReplacementFromFormat from_format = r.from().format();
 	if (from_format == xml::ReplacementFromFormat::perl) {
 		type = regex_constants::perl;
@@ -42,7 +42,7 @@ Replacement::Replacement(xml::Replacement& r) {
 	}
 
 	LOG(debug) << r.from() << " " << type;
-	match_expression = wregex(r.from(), type);
+	match_expression = make_u32regex(r.from(), type);
 
 	xml::ReplacementToFormat to_format = r.to().format();
 	if (to_format == xml::ReplacementToFormat::sed) {
@@ -61,7 +61,7 @@ Replacement::Replacement(xml::Replacement& r) {
 }
 
 wstring Replacement::apply_to(const wstring& str) {
-	wstring result = regex_replace(str, match_expression, replacement, match_flags);
+	wstring result = u32regex_replace(str, match_expression, replacement, match_flags);
 	LOG(debug) << str << " -> " << result;
 	return result;
 }

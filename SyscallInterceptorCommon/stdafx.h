@@ -41,8 +41,8 @@
 #include <tchar.h>
 
 // often needed headers that hardly ever change (i.e. dependencies)
-#include <boost/filesystem.hpp>  // including this before boost/log/ fixes linker errors (it's a work around)
 #include <boost/log/common.hpp>
+#include <boost/filesystem.hpp>  // including this before boost/log/ fixes linker errors (it's a work around)
 #include <boost/regex.hpp>
 #include <boost/foreach.hpp>
 

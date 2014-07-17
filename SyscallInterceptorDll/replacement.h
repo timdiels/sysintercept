@@ -20,7 +20,7 @@
 #ifndef REPLACEMENT_H_
 #define REPLACEMENT_H_
 
-// TODO: apparently boost.regex badly supports unicode. Because of wchar_t... eh?  http://www.boost.org/doc/libs/1_49_0/libs/regex/doc/html/boost_regex/unicode.html
+#include <boost/regex/icu.hpp>
 
 class Replacement {
 	public:
@@ -29,7 +29,7 @@ class Replacement {
 		std::wstring apply_to(const std::wstring& str);
 
 	private:
-		boost::wregex match_expression;
+		boost::u32regex match_expression;
 		std::wstring replacement;
 		boost::match_flag_type match_flags;
 };

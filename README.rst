@@ -40,6 +40,22 @@ What it also does:
 How to compile/'install'
 ------------------------
 
+On Arch Linux
+'''''''''''''
+
+- Install these packages:
+  yaourt -Sy base-devel mingw-w64-icu  # install these before the others
+  yaourt -Sy mingw-w64-cmake mingw-w64-boost codesynthesis-xsd mingw-w64-xerces-c
+  
+- Run:
+
+    ./cmake_.sh
+    make
+  
+
+On Windows
+''''''''''
+
 - Install `CMake`__
   
   __ http://cmake.org/cmake/resources/software.html

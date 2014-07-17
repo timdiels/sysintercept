@@ -3,8 +3,8 @@
 #include <iostream>
 #include <vector>
 #include <stdexcept>
-#include <Windows.h>
-#include <TlHelp32.h>
+#include <windows.h>
+#include <tlhelp32.h>
 
 class Process
 {
