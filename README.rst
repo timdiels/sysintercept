@@ -1,3 +1,4 @@
+In its current state it's more of a proof of concept and some ideas. I also haven't worked on it in years and probably won't any time soon.
 
 sysintercept allows you to intercept and modify win32 system calls done by a process. sysintercept provides a CLI. Aim is to allow rewriting paths, translating keyboard input, ... various things for improved compatibility.
 
