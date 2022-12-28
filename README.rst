@@ -105,12 +105,11 @@ This was the original use case for the tool but I no longer have a need for this
   
 Other notes
 ============
-The current implementation intercepts syscalls with user space techniques. Programs can still get round the interception, but only if using hacky techniques which aren't used unless you are really trying to thwart this specific interceptor. 
+The current implementation intercepts syscalls with user space techniques, by hooking into certain api calls. While programs can't avoid the hook on those api calls, they can still make system calls on their own without those api calls although it would be a fragile way of doing it and no sane program would do this unless specifically trying to thwart api hooking. Point being, this tool will never be a perfect sandbox and it certainly isn't in it's current state; so don't use it on malware.
 (See 2d, 2f, 2g of
 http://www.stanford.edu/~stinson/paper_notes/win_dev/hooks/defeating_hooks.txt.
 Even finding direct interrupt stuff and replacing that would not work because
-it's probably an undecidable problem The article isn't enthusiastic about
-kernel hooks, though I suppose that can be made safe and solid)
+it's probably an undecidable problem)
 
 
 Performance
