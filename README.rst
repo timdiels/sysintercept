@@ -1,4 +1,4 @@
-In its current state it's more of a proof of concept and some ideas. I also haven't worked on it in years and probably won't any time soon.
+If you are looking for a hook library/engine, try [EasyHook](https://easyhook.github.io/) instead. The original intent of this repo was to rewrite file system paths in system calls of a process without having to use a virtual machine or without having the source code of the program that sees the fake file system. This repo contains a proof of concept, including a basic 32 bit hook mechanism, plus research notes and ideas. When I last worked on this, I was masking large changes directly on the master branch and did not finish them so you'd likely have to go back a number of commits to find a version that works.
 
 sysintercept allows you to intercept and modify win32 system calls done by a process. sysintercept provides a CLI. Aim is to allow rewriting paths, translating keyboard input, ...
 
