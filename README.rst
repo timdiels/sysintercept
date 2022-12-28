@@ -105,7 +105,7 @@ This was the original use case for the tool but I no longer have a need for this
   
 Other notes
 ============
-The current implementation intercepts syscalls with user space techniques, by hooking into certain api calls. While programs can't avoid the hook on those api calls, they can still make system calls on their own without those api calls although it would be a fragile way of doing it and no sane program would do this unless specifically trying to thwart api hooking. Point being, this tool will never be a perfect sandbox and it certainly isn't in it's current state; so don't use it on malware. Though apparently it would be possible to catch all syscalls after all https://jbremer.org/intercepting-system-calls-on-x86_64-windows/
+The current implementation intercepts syscalls with user space techniques, by hooking into certain api calls. While programs can't avoid the hook on those api calls, they can still make system calls on their own without those api calls although it would be a fragile way of doing it and no sane program would do this unless specifically trying to thwart api hooking. Point being, this tool will never be a perfect sandbox and it certainly isn't in it's current state; so don't use it on malware.
 (See 2d, 2f, 2g of
 http://www.stanford.edu/~stinson/paper_notes/win_dev/hooks/defeating_hooks.txt.)
 
@@ -246,7 +246,6 @@ from the start etc?
 
 Related projects
 ----------------
-
 API hooking:
 
 - http://en.wikipedia.org/wiki/Hooking#Windows
