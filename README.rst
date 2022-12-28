@@ -1,6 +1,6 @@
-If you are looking for a hook library/engine, try [EasyHook](https://easyhook.github.io/) instead. The original intent of this repo was to rewrite file system paths in system calls of a process without having to use a virtual machine or without having the source code of the program that sees the fake file system. This repo contains a proof of concept, including a basic 32 bit hook mechanism, plus research notes and ideas. When I last worked on this, I was masking large changes directly on the master branch and did not finish them so you'd likely have to go back a number of commits to find a version that works.
+If you are looking for a windows hooking library/engine, try [EasyHook](https://easyhook.github.io/) or [detours](https://github.com/microsoft/detours) instead. The original intent of this repo was to rewrite file system paths in system calls of a process without having to use a virtual machine and without modifying the program executable that should see the fake file system. This repo contains a proof of concept, including a basic 32 bit hook mechanism, plus research notes and ideas. When I last worked on this, I was making large changes directly on the master branch and did not finish them so you'd likely have to go back a number of commits to find a version that works.
 
-sysintercept allows you to intercept and modify win32 system calls done by a process. sysintercept provides a CLI. Aim is to allow rewriting paths, translating keyboard input, ...
+The idea/goal: sysintercept allows you to intercept and modify win32 system calls done by a process. sysintercept provides a CLI. Aim is to allow rewriting paths, translating keyboard input, ...
 
 .. contents::
 
@@ -24,10 +24,11 @@ Shortcomings:
 - Verbose logging that cannot be turned off.
 - Does not handle relative path
 - Catches only a couple of functions for path rewriting but misses many other ones.
+- Supports barely any rules currently.
 
 
-How to compile/'install'
-------------------------
+How to compile
+----------------
 Apparently this requires zero install, you might be able to avoid that by looking for a build command in the zero install feed file, an xml file. You might also get visual studio to compile it as that's how I started out. These are the original instructions:
 
 - Setting up the environment:
@@ -82,6 +83,7 @@ Use cases
 
 ZI (http://0install.net) Use cases
 ----------------------------------
+This was the original use case for the tool but I no longer have a need for this.
 
 - Allow path redirects in feed file. 
 
@@ -99,25 +101,10 @@ ZI (http://0install.net) Use cases
     - /media/...
 
     - and no more than those dirs. This way devs don't have to make a call to resolve a relative to an absolute path, the sandbox does it for them.
-
-
-Other use cases
----------------
-
-TODO there are other uses as well, just need to brainstorm and note them down
-
-
-Wishlist
-========
-.. (will later be titled What is sysintercept?... or such)
-- Something that enables intercepting system calls of a child process on windows.
-- Intercepting does not affect anything else but the process whose syscalls are being intercepted.
-- Is performant, does not cause serious slow-down.
   
   
-More project info
-=================
-
+Other notes
+============
 The current implementation intercepts syscalls with user space techniques. Programs can still get round the interception, but only if using hacky techniques which aren't used unless you are really trying to thwart this specific interceptor. 
 (See 2d, 2f, 2g of
 http://www.stanford.edu/~stinson/paper_notes/win_dev/hooks/defeating_hooks.txt.
@@ -128,16 +115,13 @@ kernel hooks, though I suppose that can be made safe and solid)
 
 Performance
 -----------
-There is no emulation or virtualization involved. It injects a dll into the target process. The dll wraps all system calls necessary for the given config and only those (todo).
+There is no emulation or virtualization involved. It injects a dll into the target process. The dll wraps all system calls necessary for the given config and only those, the hooking can be done dynamically without recompiling the dll.
 
-Todo: a config, api or python binding are convenient ways of changing the behavior of system calls but would end up at least wrapping all system calls regardless of whether they are used by the script as that needs to be decided at compile time. The overhead of the python binding might be too much or would it be comparable to python performance? At least for some things it could be too much. Rust might be better as it does allow optimizing at compile time.
-
-Todo: In a much much later project state, sysintercept could detect support for system call interposition and choose the best available mechanism. (e.g. prefer kernel module to userland patching). Is this a thing on windows?
+Todo: python or lua would be more flexible than an xml config file, but would the overhead of python be acceptable for system calls? We could offer multiple mechanisms, e.g. for some cases python is fast enough. Rust might be a faster alternative. Either way it needs to be implemented first in c++ or rust.
 
 
 License
 -------
-
 Project is covered by the GPLv3 license.
 
 Libraries used in project:
@@ -185,7 +169,6 @@ How to intercept syscalls?
   Con: 
 
   - translating binaries causes first run slow-down
-
   - translating binaries may end up being very hard
 
 - IAT / caller patching
@@ -197,7 +180,6 @@ How to intercept syscalls?
     http://msdn.microsoft.com/en-us/magazine/cc302289.aspx
     /This is because APISPY32 performs its function interception on the
     application executable image, but not on the image of any DLL./
-
   - Also, there's a problem with NT4, fix with
     http://msdn.microsoft.com/en-us/magazine/cc302289.aspx
     /Matt designed APISPY32 for Windows NT 3.5./
@@ -216,7 +198,6 @@ How to intercept syscalls?
   - trampolining: first instructions are modified to a jump to hook, the
     hook uses a trampoline function to call the original function (which
     is now modified with a jump)
-
   - hot patching: functions to patch have free room at start to make
     patching more stable and easy (only when they were compiled that way)
   
@@ -234,45 +215,29 @@ How to intercept syscalls?
   - Programs could bypass interception using very hacky techniques if they realize they are being intercepted by this tool but that's fine for this tool's purpose.
 
 - process level emulation: I forgot... But it was effective, though quite slow.
-
 - Various info:
-
   - windows
-
     - place dll in same dir
-
     - http://www.codeproject.com/Articles/2082/API-hooking-revealed
-
     - http://www.codeproject.com/Articles/30140/API-Hooking-with-MS-Detours
-
     - http://www.autoitscript.com/forum/topic/87240-windows-api-hooking-injecting-a-dll/
-
     - http://jpassing.com/2008/01/06/using-import-address-table-hooking-for-testing/
-
     - http://www.codeproject.com/Articles/4610/Three-Ways-to-Inject-Your-Code-into-Another-Proces
-
     - http://www.ethicalhacker.net/content/view/207/24/
-
     - apispy32
-
     - http://www.appvirtguru.com/
-
   - linux
 
     http://wiki.virtualsquare.org/wiki/index.php/System_Call_Interposition:_how_to_implement_virtualization
 
     - purelibc/LD_PRELOAD (ineffective)
-
     - ptrace (just slow? or also ineffective?)
-
     - utrace (requires kernel mod)
 
     few more like it
 
     - systemtap (?)
-
     - uprobes (utrace)
-
     - ltt-ng (purelibc?)
 
 
@@ -288,27 +253,18 @@ Related projects
 API hooking:
 
 - http://en.wikipedia.org/wiki/Hooking#Windows
-
-- http://easyhook.codeplex.com/
+- easyhook, detours, ...
 
 App virtualization:
 
 - windows:
-
   - free: http://portable-app.com/
-
   - shareware: http://www.cameyo.com/
-
 - commercial:
-
   - thinapp
-
   - endeavor application jukebox
-
   - http://www.enigmaprotector.com/en/aboutvb.html
-
 - free, linux
-
   - http://wiki.virtualsquare.org/wiki/index.php/Main_Page#Overview_of_tools_and_libraries
 
     various interesting implementations: http://wiki.virtualsquare.org/wiki/index.php/System_Call_Interposition:_how_to_implement_virtualization
@@ -321,22 +277,14 @@ App virtualization:
 Sandboxes:
 
 - free, linux:
-
   - LXC http://lxc.sourceforge.net/
-
   - http://plash.beasts.org/wiki/ (only works if glib isn't statically linked,
     which it normally isn't)
-
   - http://fedoraproject.org/wiki/Features/VirtSandbox
-
   - selinux http://blog.bodhizazen.net/linux/selinux-sandbox/
-
 - non-free:
-
   - windows: sandboxie
-
   - mac: appstore sandboxing
-
 
 Process-level emulation:
 
@@ -345,7 +293,6 @@ Process-level emulation:
 
 System calls
 ------------
-
 A system consists of kernel-space and user-space. CPU has a mechanism for
 privileges. Kernel has privilege to access hardware directly, user-space has no
 such privilege and must ask the kernel to do so via a syscall. Syscalls can
@@ -353,14 +300,12 @@ usually be done by CPU interrupts (x86 also has SYSCALL/SYSENTER (or call
 gates)); which to use depends on choices of the kernel. Most OSs provide a
 library to do this syscall interrupting.
 
-
 Any well-behaved application will use that library. Though when wanting to
 offer security one should take into account the possibility of a syscall by
 manual interrupt without that library (or are the details of the interrupt so
 unstable that it'd be very hard to get this working?? and would that justify
 ignoring it? Also take into account, it may be statically linked into apps and
 libs)
-
 
 PE executable format
 --------------------
@@ -372,39 +317,24 @@ Definitions
 
 Various
 '''''''
-
 - System call interposition (linux) = API hooking (windows)
-
 - tracing = hypercall = hook = probing
-
 - process/application level virtualization = sandboxing
-
 - virtualization ~= emulation
-
 - App virtualization terms: http://www.brianmadden.com/blogs/rubenspruijt/archive/2010/09/23/application-virtualization-smackdown-head-to-head-analysis-of-endeavors-citrix-installfree-microsoft-spoon-symantec-and-vmware.aspx
-
 - When a process makes use of a library, the library code is executed in the same process' context
 
 Virtualization vs sandboxing
 ''''''''''''''''''''''''''''
-
 - application virtualization solutions:
-
   - a server from which software can be retrieved by clients, 
-
   - something to record installed files into a single app file which can be
     uploaded to server
-
   - applications are ran by a virtualization component which modifies and
     passes syscalls (compatibility layer)
-
   - goal: easier to run app without installing, configging, ...
-
 - sandbox solutions:
-
   - applications are ran by a virtualization component which modifies and
     passes syscalls
-
   - or the kernel/libs are modified
-
   - goal: much greater focus on security/privacy than app virtualization
