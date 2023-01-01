@@ -2,18 +2,17 @@ If you are looking for a windows hooking library/engine, try [EasyHook](https://
 
 The idea/goal: sysintercept allows you to intercept and modify win32 system calls done by a process. sysintercept provides a CLI. Aim is to allow rewriting paths, translating keyboard input, ...
 
-.. contents::
 
+## Usage
+At the command line:
 
-Usage
-=====
-At the command line::
-
-  sysintercept c:\full\path\to\config.xml relative\or\abs\path\to\something.exe
+```
+sysintercept c:\full\path\to\config.xml relative\or\abs\path\to\something.exe
+```
   
 For config.xml syntax see 
-`this example <https://github.com/limyreth/sysintercept/blob/master/tests/haskell_pathrewrite/config.xml>`_ to get an idea
-and `sysintercept_config.xsd <https://github.com/limyreth/sysintercept/blob/master/xsd/sysintercept_config.xsd>`_
+[this example](./blob/master/tests/haskell_pathrewrite/config.xml) to get an idea
+and [sysintercept_config.xsd](./blob/master/xsd/sysintercept_config.xsd)
 for full details. 
 
 This runs something.exe and applies rules of config.xml to it.
@@ -27,27 +26,29 @@ Shortcomings:
 - Supports barely any rules currently.
 
 
-How to compile
-----------------
+### How to compile
 Apparently this requires zero install, you might be able to avoid that by looking for a build command in the zero install feed file, an xml file. You might also get visual studio to compile it as that's how I started out. These are the original instructions:
 
 - Setting up the environment:
+  - Download and run [Zero Install setup for windows](http://0install.net/install-windows.html)
+  - Open a command line and run:
 
-  - Download and run `Zero Install setup for windows <http://0install.net/install-windows.html>`_
-
-  - Open a command line and run::
-
-      0alias 0compile http://0install.net/2006/interfaces/0compile.xml
+    ```
+    0alias 0compile http://0install.net/2006/interfaces/0compile.xml
+    ```
 
   - Download and unpack the sysintercept source
+  - In the root of the source, open a command prompt and run:
 
-  - In the root of the source, open a command prompt and run::
-
-      0compile setup
+    ```
+    0compile setup
+    ```
     
-- Actual building (incremental build)::
+- Actual building (incremental build):
 
-    0compile build
+  ```
+  0compile build
+  ```
 
 
 TODO get rid of these steps:
@@ -55,70 +56,34 @@ TODO get rid of these steps:
 - 0install
 - Install windows SDK (for VC++ toolchain)
 - boost and friends:
-
-  Regardless of where you install boost, I'll refer to it as C:\boost.
+  - Install boost: Dowload and unpack [this](http://www.boost.org/doc/libs/1_49_0/more/getting_started/windows.html) to C:\boost.
+  - Install boost-log: Download and unpack boost-log files from sourceforge, to C:\boost.
+  - Compile all boost libs, open "windows SDK 7.1 command prompt" (via start menu) and execute:
   
-  - Install boost: 
-    
-    Dowload and unpack `this`__ to C:\boost.
-  
-    __ http://www.boost.org/doc/libs/1_49_0/more/getting_started/windows.html
-  
-  - Install boost-log:
+    ```
+    cd C:\boost
+    bootstrap
+    PATH=%PATH%;C:\boost\bin
+    .\b2 --build-type=complete stage
+    ```
 
-    Download and unpack boost-log files from sourceforge, to C:\boost.
-  
-  - Compile all boost libs, open "windows SDK 7.1 command prompt" (via start menu) and execute::
-  
-      cd C:\boost
-      bootstrap
-      PATH=%PATH%;C:\boost\bin
-      .\b2 --build-type=complete stage
-      
-  - Download and install codesynthesis msi from here: http://www.codesynthesis.com/products/xsd/download.xhtml
-
-
-Use cases
-=========
-
-ZI (http://0install.net) Use cases
-----------------------------------
-This was the original use case for the tool but I no longer have a need for this.
-
-- Allow path redirects in feed file. 
-
-  - redirect hardcoded file paths to correct location (location where binaries
-    will be placed is impossible to know at compile time)
-
-  - could be used to work with simplified view of environment's filesystem
-
-    - /home: current user's homedir
-
-    - /app/cache
-
-    - /app/config
-
-    - /media/...
-
-    - and no more than those dirs. This way devs don't have to make a call to resolve a relative to an absolute path, the sandbox does it for them.
+  - Download and [install codesynthesis msi](http://www.codesynthesis.com/products/xsd/download.xhtml).
   
   
-Other notes
-============
-The current implementation intercepts syscalls with user space techniques, by hooking into certain api calls. While programs can't avoid the hook on those api calls, they can still make system calls on their own without those api calls although it would be a fragile way of doing it and no sane program would do this unless specifically trying to thwart api hooking. Point being, this tool will never be a perfect sandbox and it certainly isn't in it's current state; so don't use it on malware.
-(See 2d, 2f, 2g of
-http://www.stanford.edu/~stinson/paper_notes/win_dev/hooks/defeating_hooks.txt.)
-
-
-Performance
------------
+## Other notes
+### Performance
 There is no emulation or virtualization involved. It injects a dll into the target process. The dll wraps all system calls necessary for the given config and only those, the hooking can be done dynamically without recompiling the dll.
 
 Todo: python or lua would be more flexible than an xml config file, but would the overhead of python be acceptable for system calls? We could offer multiple mechanisms, e.g. for some cases python is fast enough. Rust might be a faster alternative. Either way it needs to be implemented first in c++ or rust.
 
 
-License
--------
+### Defeating the hook
+The current implementation intercepts syscalls with user space techniques, by hooking into certain api calls. While programs can't avoid the hook on those api calls, they can still make system calls on their own without those api calls although it would be a fragile way of doing it and no sane program would do this unless specifically trying to thwart api hooking. Point being, this tool will never be a perfect sandbox and it certainly isn't in it's current state; so don't use it on malware.
+(See 2d, 2f, 2g of
+http://www.stanford.edu/~stinson/paper_notes/win_dev/hooks/defeating_hooks.txt.)
+
+
+### License
 Project is covered by the GPLv3 license.
 
 Libraries used in project:
@@ -128,13 +93,22 @@ Libraries used in project:
 - boost: boost license -> GPL compatible
 - CodeSynthesis: GPLv2
 
-  
-Design choices
-===============
 
-Program design overview
------------------------
+### The original use case
+This was the original use case for the tool but I no longer have a need for this.
 
+- Allow path redirects in ZI (http://0install.net) feed file. 
+  - redirect hardcoded file paths to correct location (location where binaries
+    will be placed is impossible to know at compile time)
+  - could be used to work with simplified view of environment's filesystem
+    - /home: current user's homedir
+    - /app/cache
+    - /app/config
+    - /media/...
+    - and no more than those dirs. This way devs don't have to make a call to resolve a relative to an absolute path, the sandbox does it for them.
+
+
+### Design overview
 sysintercept.dll: This dll intercepts win32 calls of whatever process it is loaded by.
 
 sysintercept.exe: a cli interface, that starts a program and injects the dll into that program's process.
@@ -153,9 +127,8 @@ When the child process runs (i.e. when it is resumed):
 - upon first win32 call, the dll will access shared memory, load and parse the xml file so that it knows what to do with intercepted calls.
   Note we couldn't do this in DllMain as many libs aren't loaded yet (e.g. IPC for shared memory), Dll main is very limited.
 
-System call interposition methods
----------------------------------
-How to intercept syscalls?
+### System call interposition methods
+I.e. how to intercept syscalls?
 
 - Translate app binaries and its dependencies to redirect syscalls through the
   compatibility layer (does not require source code)
@@ -244,8 +217,7 @@ Well, should do another comparison perhaps, will we go for max security
 from the start etc?
 
 
-Related projects
-----------------
+### Related projects (a fairly dated list)
 API hooking:
 
 - http://en.wikipedia.org/wiki/Hooking#Windows
@@ -268,8 +240,6 @@ App virtualization:
     (rump, an anykernel, looks interesting too; allows you to run each process
     with a virtual kernel with everything customised to bits)
 
-    **might want to add to this project**
-
 Sandboxes:
 
 - free, linux:
@@ -287,8 +257,7 @@ Process-level emulation:
 - https://minemu.org/mediawiki/index.php?title=Main_Page
 
 
-System calls
-------------
+### System calls
 A system consists of kernel-space and user-space. CPU has a mechanism for
 privileges. Kernel has privilege to access hardware directly, user-space has no
 such privilege and must ask the kernel to do so via a syscall. Syscalls can
@@ -303,16 +272,12 @@ unstable that it'd be very hard to get this working?? and would that justify
 ignoring it? Also take into account, it may be statically linked into apps and
 libs)
 
-PE executable format
---------------------
-http://msdn.microsoft.com/en-us/magazine/cc301805.aspx
-http://msdn.microsoft.com/en-us/magazine/cc301808.aspx
+### PE executable format
+- http://msdn.microsoft.com/en-us/magazine/cc301805.aspx
+- http://msdn.microsoft.com/en-us/magazine/cc301808.aspx
 
-Definitions
------------
+### Definitions
 
-Various
-'''''''
 - System call interposition (linux) = API hooking (windows)
 - tracing = hypercall = hook = probing
 - process/application level virtualization = sandboxing
@@ -320,8 +285,7 @@ Various
 - App virtualization terms: http://www.brianmadden.com/blogs/rubenspruijt/archive/2010/09/23/application-virtualization-smackdown-head-to-head-analysis-of-endeavors-citrix-installfree-microsoft-spoon-symantec-and-vmware.aspx
 - When a process makes use of a library, the library code is executed in the same process' context
 
-Virtualization vs sandboxing
-''''''''''''''''''''''''''''
+#### Virtualization vs sandboxing
 - application virtualization solutions:
   - a server from which software can be retrieved by clients, 
   - something to record installed files into a single app file which can be
